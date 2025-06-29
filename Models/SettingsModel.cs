@@ -3,6 +3,9 @@ using UnityEngine;
 
 namespace FastSoldInFlea.Models
 {
+	/// <summary>
+	/// Model with config fields
+	/// </summary>
 	public class SettingsModel
 	{
 		public static SettingsModel Instance { get; private set; }
@@ -30,6 +33,11 @@ namespace FastSoldInFlea.Models
 				"The amount to subtract from the fetched flea price before add offer.");
 		}
 		
+		/// <summary>
+		/// Init configs model
+		/// </summary>
+		/// <param name="configFile"></param>
+		/// <returns></returns>
 		public static SettingsModel Create(ConfigFile configFile)
 		{
 			if (Instance != null)

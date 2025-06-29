@@ -15,18 +15,19 @@ namespace FastSoldInFlea
     [BepInPlugin("katrin0522.FastSoldInFlea", "Kat.FastSoldInFlea", "1.0.0")]
     public class FastSoldInFleaPlugin : BaseUnityPlugin
     {
-        public static ManualLogSource logSource;
-        
         private SettingsModel _settings;
         
+        public static ManualLogSource logSource;
         public static ISession Session => ClientAppUtils.GetMainApp().GetClientBackEndSession();
+        
         public static bool IsKeyPressed;
-        public static string LastCacheItemID;
+        
         public static double LastCachePrice;
         public static Item LastCacheItem;
-        public static TextMeshProUGUI CachedTextButton = null;
         public static string CachedOriginalText = "";
         public static string CachedNewText = "";
+        
+        public static TextMeshProUGUI CachedTextButton = null;
         public static SimpleContextMenu MainContextMenu;
         
         private void Awake()
@@ -47,6 +48,7 @@ namespace FastSoldInFlea
         {
             IsKeyPressed = SettingsModel.Instance.KeyBind.Value.IsPressed();
 
+            //Updating view for button if it !null
             if (CachedTextButton)
             {
                 if (IsKeyPressed && !string.IsNullOrEmpty(CachedNewText))
@@ -60,8 +62,14 @@ namespace FastSoldInFlea
             }
         }
         
+        /// <summary>
+        /// Trying add offer to flea with Item and Adjusted price
+        /// </summary>
+        /// <param name="item"></param>
+        /// <param name="adjustedPrice"></param>
         public static void TryAddOfferToFlea(Item item, double adjustedPrice)
         {
+            //Used some code from LootValue repository
             var g = new FleaRequirement()
             {
                 count = adjustedPrice,
@@ -73,6 +81,11 @@ namespace FastSoldInFlea
             NotificationManagerClass.DisplayMessageNotification($"Sell offer for {g.count}RUB", ENotificationDurationType.Default, ENotificationIconType.EntryPoint);
         }
         
+        /// <summary>
+        /// Get price with preset from config model 
+        /// </summary>
+        /// <param name="item"></param>
+        /// <param name="callback"></param>
         public static void TryGetPrice(Item item, Action<double> callback)
         {
             Session.GetMarketPrices(item.TemplateId, result =>
@@ -96,6 +109,9 @@ namespace FastSoldInFlea
 
     }
 
+    /// <summary>
+    /// Presets for get and adjust price
+    /// </summary>
     public enum AutoFleaPrice
     {
         Minimum,
