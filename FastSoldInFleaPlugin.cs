@@ -1,4 +1,5 @@
-﻿using BepInEx;
+﻿using System;
+using BepInEx;
 using BepInEx.Configuration;
 using BepInEx.Logging;
 using EFT.Communications;
@@ -21,6 +22,7 @@ namespace FastSoldInFlea
         public static bool IsKeyPressed;
         public static string LastCatchedItemID;
         public static double LastCatchedPrice;
+        public static ISession CathedSession;
         public static Item LastCachedItem;
 
         private void Update()
@@ -37,19 +39,41 @@ namespace FastSoldInFlea
 
             new FleaCatchPricePatch().Enable();
             new FleaCatchItemPatch().Enable();
+            new ContextMenuAddOfferPatch().Enable();
         }
         
-        public static void TryAddOfferToFlea(Item item, double unadjustedPrice)
+        public static void TryAddOfferToFlea(Item item, double adjustedPrice)
         {
             var g = new FleaRequirement()
             {
-                count = unadjustedPrice - 1,
+                count = adjustedPrice,
                 _tpl = "5449016a4bdc2d6f028b456f"
             };
             
             FleaRequirement[] gs = new FleaRequirement[1] { g };
             Session.RagFair.AddOffer(false, new string[1] { item.Id }, gs, null);
-            NotificationManagerClass.DisplayMessageNotification($"Продаём оффер за {g.count}RUB", ENotificationDurationType.Default, ENotificationIconType.EntryPoint);
+            NotificationManagerClass.DisplayMessageNotification($"Sell offer for {g.count}RUB", ENotificationDurationType.Default, ENotificationIconType.EntryPoint);
         }
+        
+        public static void TryGetPrice(Item item, Action<double> callback)
+        {
+            Session.GetMarketPrices(item.TemplateId, result =>
+            {
+                double price = 0;
+                if (result.Value != null)
+                {
+                    price = result.Value.avg - 1;
+                }
+
+                NotificationManagerClass.DisplayMessageNotification(
+                    $"[TryGetPrice] Get price {price}", 
+                    ENotificationDurationType.Default, 
+                    ENotificationIconType.EntryPoint);
+
+                LastCatchedPrice = price;
+                callback(price);
+            });
+        }
+
     }
 }
