@@ -53,11 +53,11 @@ namespace FastSoldInFlea
             {
                 if (IsKeyPressed && !string.IsNullOrEmpty(CachedNewText))
                 {
-                    CachedTextButton.text = $"{CachedNewText} {LastCachePrice}RUB";
+                    CachedTextButton.text = $"{CachedNewText} {LastCachePrice}RUB".ToUpper();
                 }
                 else
                 {
-                    CachedTextButton.text = CachedOriginalText;
+                    CachedTextButton.text = CachedOriginalText.ToUpper();
                 }
             }
         }

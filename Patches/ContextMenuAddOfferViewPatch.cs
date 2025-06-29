@@ -37,11 +37,11 @@ namespace FastSoldInFlea.Patches
                     {
                         if (FastSoldInFleaPlugin.IsKeyPressed)
                         {
-                            FastSoldInFleaPlugin.CachedTextButton.text = $"{clearText} {price}RUB";
+                            FastSoldInFleaPlugin.CachedTextButton.text = $"{clearText} {price}RUB".ToUpper();
                         }
                         else
                         {
-                            FastSoldInFleaPlugin.CachedTextButton.text = textWithCount;
+                            FastSoldInFleaPlugin.CachedTextButton.text = textWithCount.ToUpper();
                         }
                     });
                 }
