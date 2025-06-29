@@ -2,7 +2,7 @@
 using EFT.UI.DragAndDrop;
 using SPT.Reflection.Patching;
 
-namespace FastSoldInFlea.Patches
+namespace FastSellInFlea.Patches
 {
     /// <summary>
     /// Patch to get item data when clicking on an item
@@ -20,7 +20,7 @@ namespace FastSoldInFlea.Patches
                 return true;
             }
 
-            FastSoldInFleaPlugin.LastCacheItem = __instance.Item;
+            FastSellInFleaPlugin.LastCacheItem = __instance.Item;
             return true;
         }
     }

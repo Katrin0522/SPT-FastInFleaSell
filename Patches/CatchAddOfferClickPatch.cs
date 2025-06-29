@@ -3,7 +3,7 @@ using EFT.Communications;
 using HarmonyLib;
 using SPT.Reflection.Patching;
 
-namespace FastSoldInFlea.Patches
+namespace FastSellInFlea.Patches
 {
     /// <summary>
     /// Patch for redirects while clicking on Add Offer.
@@ -20,17 +20,17 @@ namespace FastSoldInFlea.Patches
         [PatchPrefix]
         static bool Prefix()
         {
-            if (FastSoldInFleaPlugin.IsKeyPressed)
+            if (FastSellInFleaPlugin.IsKeyPressed)
             {
-                if (FastSoldInFleaPlugin.LastCacheItem == null)
+                if (FastSellInFleaPlugin.LastCacheItem == null)
                 {
                     NotificationManagerClass.DisplayWarningNotification("Maybe not have price",
                         ENotificationDurationType.Long);
                     return true;
                 }
 
-                FastSoldInFleaPlugin.TryAddOfferToFlea(FastSoldInFleaPlugin.LastCacheItem,
-                    FastSoldInFleaPlugin.LastCachePrice);
+                FastSellInFleaPlugin.TryAddOfferToFlea(FastSellInFleaPlugin.LastCacheItem,
+                    FastSellInFleaPlugin.LastCachePrice);
                 return false;
             }
 

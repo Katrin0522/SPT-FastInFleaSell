@@ -99,7 +99,7 @@
         </Reference>
     </ItemGroup>
     <ItemGroup>
-        <Compile Include="FastSoldInFleaPlugin.cs"/>
+        <Compile Include="FastSellInFleaPlugin.cs" />
         <Compile Include="Models\SettingsModel.cs"/>
         <Compile Include="Patches\CatchAddOfferClickPatch.cs" />
         <Compile Include="Patches\CatchIDItemPatch.cs" />

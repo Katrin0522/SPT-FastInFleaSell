@@ -4,16 +4,16 @@ using BepInEx.Logging;
 using EFT.Communications;
 using EFT.InventoryLogic;
 using EFT.UI;
-using FastSoldInFlea.Models;
-using FastSoldInFlea.Patches;
+using FastSellInFlea.Models;
+using FastSellInFlea.Patches;
 using SPT.Reflection.Utils;
 using TMPro;
 using FleaRequirement = GClass2102;
 
-namespace FastSoldInFlea
+namespace FastSellInFlea
 {
     [BepInPlugin("katrin0522.FastSellInFlea", "Kat.FastSellInFlea", "1.0.0")]
-    public class FastSoldInFleaPlugin : BaseUnityPlugin
+    public class FastSellInFleaPlugin : BaseUnityPlugin
     {
         private SettingsModel _settings;
         
@@ -41,7 +41,7 @@ namespace FastSoldInFlea
             new CatchMainMenuOpenPatch().Enable();
             
             logSource = Logger;
-            logSource.LogInfo("FastSoldInFlea successful loaded!");
+            logSource.LogInfo("FastSellInFlea successful loaded!");
         }
         
         private void Update()

@@ -3,7 +3,7 @@ using EFT.UI;
 using HarmonyLib;
 using SPT.Reflection.Patching;
 
-namespace FastSoldInFlea.Patches
+namespace FastSellInFlea.Patches
 {
     /// <summary>
     /// Patches to track context menu closures.
@@ -19,13 +19,13 @@ namespace FastSoldInFlea.Patches
         [PatchPostfix]
         public static void Postfix(SimpleContextMenu __instance)
         {
-            if (__instance == FastSoldInFleaPlugin.MainContextMenu)
+            if (__instance == FastSellInFleaPlugin.MainContextMenu)
             {
-                FastSoldInFleaPlugin.CachedTextButton = null;
-                FastSoldInFleaPlugin.CachedOriginalText = "";
-                FastSoldInFleaPlugin.CachedNewText = "";
-                FastSoldInFleaPlugin.LastCacheItem = null;
-                FastSoldInFleaPlugin.LastCachePrice = 0.0;
+                FastSellInFleaPlugin.CachedTextButton = null;
+                FastSellInFleaPlugin.CachedOriginalText = "";
+                FastSellInFleaPlugin.CachedNewText = "";
+                FastSellInFleaPlugin.LastCacheItem = null;
+                FastSellInFleaPlugin.LastCachePrice = 0.0;
             }
         }
     }

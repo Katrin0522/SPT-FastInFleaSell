@@ -1,7 +1,7 @@
 ﻿using BepInEx.Configuration;
 using UnityEngine;
 
-namespace FastSoldInFlea.Models
+namespace FastSellInFlea.Models
 {
 	/// <summary>
 	/// Model with config fields

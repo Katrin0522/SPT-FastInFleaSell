@@ -3,7 +3,7 @@ using EFT.UI;
 using HarmonyLib;
 using SPT.Reflection.Patching;
 
-namespace FastSoldInFlea.Patches
+namespace FastSellInFlea.Patches
 {
     /// <summary>
     /// Patch for catching the main context menu object
@@ -21,7 +21,7 @@ namespace FastSoldInFlea.Patches
             var context = __instance.ContextMenu;
             if (context != null)
             {
-                FastSoldInFleaPlugin.MainContextMenu = context;
+                FastSellInFleaPlugin.MainContextMenu = context;
             }
         }
     }
