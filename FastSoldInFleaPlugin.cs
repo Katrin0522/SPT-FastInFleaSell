@@ -12,7 +12,7 @@ using FleaRequirement = GClass2102;
 
 namespace FastSoldInFlea
 {
-    [BepInPlugin("katrin0522.FastSoldInFlea", "Kat.FastSoldInFlea", "1.0.0")]
+    [BepInPlugin("katrin0522.FastSellInFlea", "Kat.FastSellInFlea", "1.0.0")]
     public class FastSoldInFleaPlugin : BaseUnityPlugin
     {
         private SettingsModel _settings;
