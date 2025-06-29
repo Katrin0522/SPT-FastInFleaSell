@@ -21,21 +21,22 @@ namespace FastSoldInFlea
         private ConfigEntry<KeyboardShortcut> keyBind;
         public static ISession Session => ClientAppUtils.GetMainApp().GetClientBackEndSession();
         public static bool IsKeyPressed;
-        public static string LastCatchedItemID;
-        public static double LastCatchedPrice;
-        public static Item LastCachedItem;
+        public static string LastCacheItemID;
+        public static double LastCachePrice;
+        public static Item LastCacheItem;
         public static TextMeshProUGUI CachedTextButton = null;
         public static string CachedOriginalText = "";
+        public static string CachedNewText = "";
 
         private void Update()
         {
             IsKeyPressed = keyBind.Value.IsPressed();
 
-            if (CachedTextButton != null)
+            if (CachedTextButton)
             {
-                if (IsKeyPressed && !String.IsNullOrEmpty(CachedOriginalText))
+                if (IsKeyPressed && !string.IsNullOrEmpty(CachedNewText))
                 {
-                    CachedTextButton.text = $"Sold for {LastCatchedPrice}";
+                    CachedTextButton.text = $"{CachedNewText} {LastCachePrice}RUB";
                 }
                 else
                 {
@@ -48,13 +49,13 @@ namespace FastSoldInFlea
         {
             keyBind = Config.Bind("1. Settings", "KeyBindSell", new KeyboardShortcut(KeyCode.LeftShift)); 
             
-            logSource = Logger;
-            logSource.LogInfo("FastSoldInFlea successful loaded!");
-
             new CatchAddOfferPatch().Enable();
             new FleaCatchItemPatch().Enable();
             new ContextMenuAddOfferPatch().Enable();
             new ContextMenuClosePatch().Enable();
+            
+            logSource = Logger;
+            logSource.LogInfo("FastSoldInFlea successful loaded!");
         }
         
         public static void TryAddOfferToFlea(Item item, double adjustedPrice)
@@ -80,12 +81,12 @@ namespace FastSoldInFlea
                     price = result.Value.avg - 1;
                 }
 
-                NotificationManagerClass.DisplayMessageNotification(
-                    $"[TryGetPrice] Get price {price}", 
-                    ENotificationDurationType.Default, 
-                    ENotificationIconType.EntryPoint);
+                // NotificationManagerClass.DisplayMessageNotification(
+                //     $"[TryGetPrice] Get price {price}", 
+                //     ENotificationDurationType.Default, 
+                //     ENotificationIconType.EntryPoint);
 
-                LastCatchedPrice = price;
+                LastCachePrice = price;
                 callback(price);
             });
         }
