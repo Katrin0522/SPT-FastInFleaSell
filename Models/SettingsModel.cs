@@ -21,16 +21,21 @@ namespace FastSoldInFlea.Models
 				"Quick Offer Hold Key", 
 				new KeyboardShortcut(KeyCode.LeftShift), 
 				"Hold this key to show quick offer adding when opened context menu"); 
+			
 			OfferPresetFlea = configFile.Bind(
 				"Settings", 
 				"Flea Market Price Preset",
 				AutoFleaPrice.Average,
 				"Choose how your offer price will be based on market values");
+			
 			AdjustPriceValue = configFile.Bind(
 				"Settings", 
 				"Price Subtract Value",
 				1,
-				"The amount to subtract from the fetched flea price before add offer.");
+				new ConfigDescription(
+					"The amount to subtract from the fetched flea price before add offer.",
+					new AcceptableValueRange<int>(0, 9999999)
+				));
 		}
 		
 		/// <summary>
