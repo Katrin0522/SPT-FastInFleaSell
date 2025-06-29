@@ -23,6 +23,9 @@ namespace FastSoldInFlea.Patches
             {
                 FastSoldInFleaPlugin.CachedTextButton = null;
                 FastSoldInFleaPlugin.CachedOriginalText = "";
+                FastSoldInFleaPlugin.CachedNewText = "";
+                FastSoldInFleaPlugin.LastCacheItem = null;
+                FastSoldInFleaPlugin.LastCachePrice = 0.0;
             }
         }
     }
