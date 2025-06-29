@@ -20,12 +20,12 @@ namespace FastSoldInFlea.Patches
         {
 	        if (FastSoldInFleaPlugin.IsKeyPressed)
 	        {
-                if (FastSoldInFleaPlugin.LastCachedItem == null || FastSoldInFleaPlugin.LastCatchedItemID == null)
+                if (FastSoldInFleaPlugin.LastCacheItem == null || FastSoldInFleaPlugin.LastCacheItemID == null)
                 {
 	                NotificationManagerClass.DisplayWarningNotification($"Maybe not have price", ENotificationDurationType.Long);
                     return true;
                 }
-                FastSoldInFleaPlugin.TryAddOfferToFlea(FastSoldInFleaPlugin.LastCachedItem, FastSoldInFleaPlugin.LastCatchedPrice);
+                FastSoldInFleaPlugin.TryAddOfferToFlea(FastSoldInFleaPlugin.LastCacheItem, FastSoldInFleaPlugin.LastCachePrice);
                 return false;
             }
 	        else
@@ -46,8 +46,8 @@ namespace FastSoldInFlea.Patches
             {
                 return true;
             }
-            FastSoldInFleaPlugin.LastCachedItem = __instance.Item;
-            FastSoldInFleaPlugin.LastCatchedItemID = __instance.Item.TemplateId;
+            FastSoldInFleaPlugin.LastCacheItem = __instance.Item;
+            FastSoldInFleaPlugin.LastCacheItemID = __instance.Item.TemplateId;
             
             return true;
         }
@@ -68,21 +68,24 @@ namespace FastSoldInFlea.Patches
 			{
 				int myOffersCount = ragFair.MyOffersCount;
 				int maxOffersCount = ragFair.MaxOffersCount;
-				string text = string.Format("AddOfferButton{0}/{1}".Localized(null), myOffersCount, maxOffersCount);
-				FastSoldInFleaPlugin.CachedOriginalText = text;
-				if (caption == text)
+				string textWithCount = string.Format("AddOfferButton{0}/{1}".Localized(), myOffersCount, maxOffersCount);
+				
+				string clearText = string.Format("ADDOFFER".Localized());
+				FastSoldInFleaPlugin.CachedOriginalText = textWithCount;
+				FastSoldInFleaPlugin.CachedNewText = clearText;
+				if (caption.Contains(clearText))
 				{
 					FastSoldInFleaPlugin.CachedTextButton = ____text; 
 					FastSoldInFleaPlugin.logSource.LogWarning("Update button text");
-					FastSoldInFleaPlugin.TryGetPrice(FastSoldInFleaPlugin.LastCachedItem, price =>
+					FastSoldInFleaPlugin.TryGetPrice(FastSoldInFleaPlugin.LastCacheItem, price =>
 					{
 						if (FastSoldInFleaPlugin.IsKeyPressed)
 						{
-							FastSoldInFleaPlugin.CachedTextButton.text = $"Sold for {price}";
+							FastSoldInFleaPlugin.CachedTextButton.text = $"{clearText} {price}RUB";
 						}
 						else
 						{
-							FastSoldInFleaPlugin.CachedTextButton.text = text;
+							FastSoldInFleaPlugin.CachedTextButton.text = textWithCount;
 						}
 					});
 				}
