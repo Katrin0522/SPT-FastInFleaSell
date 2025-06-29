@@ -4,6 +4,7 @@ using BepInEx.Configuration;
 using BepInEx.Logging;
 using EFT.Communications;
 using EFT.InventoryLogic;
+using EFT.UI;
 using FastSoldInFlea.Patches;
 using SPT.Reflection.Utils;
 using TMPro;
@@ -27,6 +28,7 @@ namespace FastSoldInFlea
         public static TextMeshProUGUI CachedTextButton = null;
         public static string CachedOriginalText = "";
         public static string CachedNewText = "";
+        public static SimpleContextMenu MainContextMenu;
 
         private void Update()
         {
@@ -53,6 +55,7 @@ namespace FastSoldInFlea
             new FleaCatchItemPatch().Enable();
             new ContextMenuAddOfferPatch().Enable();
             new ContextMenuClosePatch().Enable();
+            new CatchMainMenuPatch().Enable();
             
             logSource = Logger;
             logSource.LogInfo("FastSoldInFlea successful loaded!");
@@ -80,11 +83,6 @@ namespace FastSoldInFlea
                 {
                     price = result.Value.avg - 1;
                 }
-
-                // NotificationManagerClass.DisplayMessageNotification(
-                //     $"[TryGetPrice] Get price {price}", 
-                //     ENotificationDurationType.Default, 
-                //     ENotificationIconType.EntryPoint);
 
                 LastCachePrice = price;
                 callback(price);
