@@ -1,25 +1,24 @@
 ﻿using System;
 using BepInEx;
-using BepInEx.Configuration;
 using BepInEx.Logging;
 using EFT.Communications;
 using EFT.InventoryLogic;
 using EFT.UI;
+using FastSoldInFlea.Models;
 using FastSoldInFlea.Patches;
 using SPT.Reflection.Utils;
 using TMPro;
-using UnityEngine;
 using FleaRequirement = GClass2102;
 
 namespace FastSoldInFlea
 {
     [BepInPlugin("katrin0522.FastSoldInFlea", "Kat.FastSoldInFlea", "1.0.0")]
-    [BepInDependency("com.kmyuhkyuk.KmyTarkovApi", "1.4.0")]
     public class FastSoldInFleaPlugin : BaseUnityPlugin
     {
         public static ManualLogSource logSource;
-
-        private ConfigEntry<KeyboardShortcut> keyBind;
+        
+        private SettingsModel _settings;
+        
         public static ISession Session => ClientAppUtils.GetMainApp().GetClientBackEndSession();
         public static bool IsKeyPressed;
         public static string LastCacheItemID;
@@ -29,10 +28,24 @@ namespace FastSoldInFlea
         public static string CachedOriginalText = "";
         public static string CachedNewText = "";
         public static SimpleContextMenu MainContextMenu;
-
+        
+        private void Awake()
+        {
+            _settings = SettingsModel.Create(Config);
+            
+            new CatchAddOfferClickPatch().Enable();
+            new CatchIDItemPatch().Enable();
+            new ContextMenuAddOfferViewPatch().Enable();
+            new ContextMenuClosePatch().Enable();
+            new CatchMainMenuOpenPatch().Enable();
+            
+            logSource = Logger;
+            logSource.LogInfo("FastSoldInFlea successful loaded!");
+        }
+        
         private void Update()
         {
-            IsKeyPressed = keyBind.Value.IsPressed();
+            IsKeyPressed = SettingsModel.Instance.KeyBind.Value.IsPressed();
 
             if (CachedTextButton)
             {
@@ -45,20 +58,6 @@ namespace FastSoldInFlea
                     CachedTextButton.text = CachedOriginalText;
                 }
             }
-        }
-        
-        private void Awake()
-        {
-            keyBind = Config.Bind("1. Settings", "KeyBindSell", new KeyboardShortcut(KeyCode.LeftShift)); 
-            
-            new CatchAddOfferPatch().Enable();
-            new FleaCatchItemPatch().Enable();
-            new ContextMenuAddOfferPatch().Enable();
-            new ContextMenuClosePatch().Enable();
-            new CatchMainMenuPatch().Enable();
-            
-            logSource = Logger;
-            logSource.LogInfo("FastSoldInFlea successful loaded!");
         }
         
         public static void TryAddOfferToFlea(Item item, double adjustedPrice)
@@ -81,7 +80,13 @@ namespace FastSoldInFlea
                 double price = 0;
                 if (result.Value != null)
                 {
-                    price = result.Value.avg - 1;
+                    price = SettingsModel.Instance.OfferPresetFlea.Value switch
+                    {
+                        AutoFleaPrice.Minimum => result.Value.min - SettingsModel.Instance.AdjustPriceValue.Value,
+                        AutoFleaPrice.Average => result.Value.avg - SettingsModel.Instance.AdjustPriceValue.Value,
+                        AutoFleaPrice.Maximum => result.Value.max - SettingsModel.Instance.AdjustPriceValue.Value,
+                        _ => result.Value.avg - 1
+                    };
                 }
 
                 LastCachePrice = price;
@@ -89,5 +94,12 @@ namespace FastSoldInFlea
             });
         }
 
+    }
+
+    public enum AutoFleaPrice
+    {
+        Minimum,
+        Average,
+        Maximum
     }
 }
