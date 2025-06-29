@@ -14,7 +14,7 @@ namespace FastSoldInFlea.Patches
     {
         protected override MethodBase GetTargetMethod()
         {
-            return AccessTools.Method(typeof(GClass3468), "method_6", null, null);
+            return AccessTools.Method(typeof(GClass3468), "method_6");
         }
 
         [PatchPrefix]
@@ -22,9 +22,9 @@ namespace FastSoldInFlea.Patches
         {
             if (FastSoldInFleaPlugin.IsKeyPressed)
             {
-                if (FastSoldInFleaPlugin.LastCacheItem == null || FastSoldInFleaPlugin.LastCacheItemID == null)
+                if (FastSoldInFleaPlugin.LastCacheItem == null)
                 {
-                    NotificationManagerClass.DisplayWarningNotification($"Maybe not have price",
+                    NotificationManagerClass.DisplayWarningNotification("Maybe not have price",
                         ENotificationDurationType.Long);
                     return true;
                 }

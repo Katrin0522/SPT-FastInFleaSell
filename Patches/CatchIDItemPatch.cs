@@ -21,8 +21,6 @@ namespace FastSoldInFlea.Patches
             }
 
             FastSoldInFleaPlugin.LastCacheItem = __instance.Item;
-            FastSoldInFleaPlugin.LastCacheItemID = __instance.Item.TemplateId;
-
             return true;
         }
     }

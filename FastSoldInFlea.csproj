@@ -8,7 +8,7 @@
         <OutputType>Library</OutputType>
         <AppDesignerFolder>Properties</AppDesignerFolder>
         <RootNamespace>FastSoldInFlea</RootNamespace>
-        <AssemblyName>FastSoldInFlea</AssemblyName>
+        <AssemblyName>Kat.FastSoldInFlea</AssemblyName>
         <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
         <LangVersion>latest</LangVersion>
         <FileAlignment>512</FileAlignment>
@@ -35,12 +35,9 @@
         <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
     </PropertyGroup>
     <PropertyGroup>
-        <PostBuildEvent>copy /Y "F:\GitHub\Tarkov\SPT-FastInFleaSell\bin\Debug\FastSoldInFlea.dll" "F:\Games\SPT\BepInEx\plugins\FastSoldInFlea.dll"</PostBuildEvent>
+        <PostBuildEvent>copy /Y "F:\GitHub\Tarkov\SPT-FastInFleaSell\bin\Debug\Kat.FastSoldInFlea.dll" "F:\Games\SPT\BepInEx\plugins\Kat.FastSoldInFlea.dll"</PostBuildEvent>
     </PropertyGroup>
     <ItemGroup>
-        <Reference Include="PhysicsModule">
-            <HintPath>Dependencies\UnityEngine.PhysicsModule.dll</HintPath>
-        </Reference>
         <Reference Include="0Harmony">
             <HintPath>Dependencies\0Harmony.dll</HintPath>
         </Reference>
@@ -86,10 +83,6 @@
         <Reference Include="UnityEngine">
             <HintPath>Dependencies\UnityEngine.dll</HintPath>
         </Reference>
-        <Reference Include="UnityEngine.AssetBundleModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-            <SpecificVersion>False</SpecificVersion>
-            <HintPath>Dependencies\UnityEngine.AssetBundleModule.dll</HintPath>
-        </Reference>
         <Reference Include="UnityEngine.CoreModule">
             <HintPath>Dependencies\UnityEngine.CoreModule.dll</HintPath>
         </Reference>
@@ -99,10 +92,6 @@
         </Reference>
         <Reference Include="UnityEngine.InputLegacyModule">
             <HintPath>Dependencies\UnityEngine.InputLegacyModule.dll</HintPath>
-        </Reference>
-        <Reference Include="UnityEngine.TextRenderingModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-            <SpecificVersion>False</SpecificVersion>
-            <HintPath>Dependencies\UnityEngine.TextRenderingModule.dll</HintPath>
         </Reference>
         <Reference Include="UnityEngine.UI, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
             <SpecificVersion>False</SpecificVersion>
