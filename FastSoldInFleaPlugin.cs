@@ -6,6 +6,7 @@ using EFT.Communications;
 using EFT.InventoryLogic;
 using FastSoldInFlea.Patches;
 using SPT.Reflection.Utils;
+using TMPro;
 using UnityEngine;
 using FleaRequirement = GClass2102;
 
@@ -22,12 +23,25 @@ namespace FastSoldInFlea
         public static bool IsKeyPressed;
         public static string LastCatchedItemID;
         public static double LastCatchedPrice;
-        public static ISession CathedSession;
         public static Item LastCachedItem;
+        public static TextMeshProUGUI CachedTextButton = null;
+        public static string CachedOriginalText = "";
 
         private void Update()
         {
             IsKeyPressed = keyBind.Value.IsPressed();
+
+            if (CachedTextButton != null)
+            {
+                if (IsKeyPressed && !String.IsNullOrEmpty(CachedOriginalText))
+                {
+                    CachedTextButton.text = $"Sold for {LastCatchedPrice}";
+                }
+                else
+                {
+                    CachedTextButton.text = CachedOriginalText;
+                }
+            }
         }
         
         private void Awake()
@@ -37,9 +51,10 @@ namespace FastSoldInFlea
             logSource = Logger;
             logSource.LogInfo("FastSoldInFlea successful loaded!");
 
-            new FleaCatchPricePatch().Enable();
+            new CatchAddOfferPatch().Enable();
             new FleaCatchItemPatch().Enable();
             new ContextMenuAddOfferPatch().Enable();
+            new ContextMenuClosePatch().Enable();
         }
         
         public static void TryAddOfferToFlea(Item item, double adjustedPrice)

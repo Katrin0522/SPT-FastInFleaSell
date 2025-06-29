@@ -1,39 +1,37 @@
 ﻿using System.Reflection;
-using EFT.InventoryLogic;
+using EFT.Communications;
 using EFT.UI;
 using EFT.UI.DragAndDrop;
-using EFT.UI.Ragfair;
 using HarmonyLib;
 using SPT.Reflection.Patching;
 using TMPro;
 
 namespace FastSoldInFlea.Patches
 {
-    internal class FleaCatchPricePatch : ModulePatch
+    internal class CatchAddOfferPatch : ModulePatch
     {
         protected override MethodBase GetTargetMethod()
         {
-            return AccessTools.Method(typeof(ItemMarketPricesPanel), "method_1", null, null);
+            return AccessTools.Method(typeof(GClass3468), "method_6", null, null);
         }
 
         [PatchPrefix]
-        static bool Prefix(ItemMarketPrices result)
+        static bool Prefix()
         {
-            if (FastSoldInFleaPlugin.IsKeyPressed)
-            {
-                FastSoldInFleaPlugin.logSource.LogWarning("DEBUG avg catch -> " + result.avg);
-                FastSoldInFleaPlugin.LastCatchedPrice = result.avg - 1;
-                FastSoldInFleaPlugin.logSource.LogWarning("DEBUG catch id -> " + FastSoldInFleaPlugin.LastCatchedItemID);
-
+	        if (FastSoldInFleaPlugin.IsKeyPressed)
+	        {
                 if (FastSoldInFleaPlugin.LastCachedItem == null || FastSoldInFleaPlugin.LastCatchedItemID == null)
                 {
-                    FastSoldInFleaPlugin.logSource.LogError("Data is null. Not create offer");
+	                NotificationManagerClass.DisplayWarningNotification($"Maybe not have price", ENotificationDurationType.Long);
                     return true;
                 }
                 FastSoldInFleaPlugin.TryAddOfferToFlea(FastSoldInFleaPlugin.LastCachedItem, FastSoldInFleaPlugin.LastCatchedPrice);
                 return false;
             }
-            return true;
+	        else
+	        {
+				return true;
+	        }
         }
     }
     
@@ -50,12 +48,6 @@ namespace FastSoldInFlea.Patches
             }
             FastSoldInFleaPlugin.LastCachedItem = __instance.Item;
             FastSoldInFleaPlugin.LastCatchedItemID = __instance.Item.TemplateId;
-            FastSoldInFleaPlugin.TryGetPrice(FastSoldInFleaPlugin.LastCachedItem, price =>
-            {
-	            FastSoldInFleaPlugin.logSource.LogWarning($"CATCH ITEM ID {__instance.Item.Id}");
-	            FastSoldInFleaPlugin.logSource.LogWarning($"CATCH ITEM Price {price}");
-	            FastSoldInFleaPlugin.logSource.LogWarning($"CATCH ITEM TemplateId {__instance.Item.TemplateId}");
-            });
             
             return true;
         }
@@ -71,29 +63,46 @@ namespace FastSoldInFlea.Patches
 		[PatchPostfix]
 		public static void Postfix(string caption, TextMeshProUGUI ____text)
 		{
-			if (!FastSoldInFleaPlugin.IsKeyPressed)
-			{
-				return;
-			}
-			
-			
 			RagFairClass ragFair = FastSoldInFleaPlugin.Session.RagFair;
 			if (ragFair != null && ragFair.Available)
 			{
 				int myOffersCount = ragFair.MyOffersCount;
 				int maxOffersCount = ragFair.MaxOffersCount;
 				string text = string.Format("AddOfferButton{0}/{1}".Localized(null), myOffersCount, maxOffersCount);
+				FastSoldInFleaPlugin.CachedOriginalText = text;
 				if (caption == text)
 				{
+					FastSoldInFleaPlugin.CachedTextButton = ____text; 
 					FastSoldInFleaPlugin.logSource.LogWarning("Update button text");
-					double cachePrice = 0.0;
 					FastSoldInFleaPlugin.TryGetPrice(FastSoldInFleaPlugin.LastCachedItem, price =>
 					{
-						cachePrice = price;
+						if (FastSoldInFleaPlugin.IsKeyPressed)
+						{
+							FastSoldInFleaPlugin.CachedTextButton.text = $"Sold for {price}";
+						}
+						else
+						{
+							FastSoldInFleaPlugin.CachedTextButton.text = text;
+						}
 					});
-					____text.text = $"Sold for {cachePrice}";
 				}
 			}
+		}
+	}
+    
+	public class ContextMenuClosePatch : ModulePatch
+	{
+		protected override MethodBase GetTargetMethod()
+		{
+			return AccessTools.Method(typeof(SimpleContextMenuButton), "Close", null, null);
+		}
+		
+		[PatchPostfix]
+		public static void Postfix()
+		{
+			FastSoldInFleaPlugin.CachedTextButton = null;
+			FastSoldInFleaPlugin.CachedOriginalText = "";
+			FastSoldInFleaPlugin.logSource.LogWarning("Closed menu");
 		}
 	}
 }
