@@ -34,7 +34,7 @@ namespace FastSellInFlea.Models
 			KeyBindHover = configFile.Bind(
 				"Settings", 
 				"Quick Offer Press Key When Hover", 
-				new KeyboardShortcut(KeyCode.LeftShift), 
+				new KeyboardShortcut(KeyCode.RightShift), 
 				new ConfigDescription(
 					"Press keybind when hover on item",
 					null, 
