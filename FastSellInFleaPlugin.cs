@@ -93,15 +93,34 @@ namespace FastSellInFlea
                 double price = 0;
                 if (result.Value != null)
                 {
-                    price = SettingsModel.Instance.OfferPresetFlea.Value switch
+                    if (SettingsModel.Instance.TypeAdjustPrice.Value == TypeMathPrice.Value)
                     {
-                        AutoFleaPrice.Minimum => result.Value.min - SettingsModel.Instance.SubstractPriceValue.Value,
-                        AutoFleaPrice.Average => result.Value.avg - SettingsModel.Instance.SubstractPriceValue.Value,
-                        AutoFleaPrice.Maximum => result.Value.max - SettingsModel.Instance.SubstractPriceValue.Value,
-                        _ => result.Value.avg - 1
-                    };
+                        price = SettingsModel.Instance.OfferPresetFlea.Value switch
+                        {
+                            AutoFleaPrice.Minimum => result.Value.min -
+                                                     SettingsModel.Instance.SubstractPriceValue.Value,
+                            AutoFleaPrice.Average => result.Value.avg -
+                                                     SettingsModel.Instance.SubstractPriceValue.Value,
+                            AutoFleaPrice.Maximum => result.Value.max -
+                                                     SettingsModel.Instance.SubstractPriceValue.Value,
+                            _ => result.Value.avg - 1
+                        };
+                    }
+                    else
+                    {
+                        price = SettingsModel.Instance.OfferPresetFlea.Value switch
+                        {
+                            AutoFleaPrice.Minimum => result.Value.min *
+                                                     (1 - (SettingsModel.Instance.SubstractPricePercent.Value / 100.0)),
+                            AutoFleaPrice.Average => result.Value.avg *
+                                                     (1 - (SettingsModel.Instance.SubstractPricePercent.Value / 100.0)),
+                            AutoFleaPrice.Maximum => result.Value.max *
+                                                     (1 - (SettingsModel.Instance.SubstractPricePercent.Value / 100.0)),
+                            _ => result.Value.avg * (1 - (99 / 100.0)),
+                        };
+                    }
                 }
-
+                price = Math.Max(1, (int)Math.Round(price));
                 LastCachePrice = price;
                 callback(price);
             });
