@@ -35,7 +35,7 @@
         <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
     </PropertyGroup>
     <PropertyGroup>
-        <PostBuildEvent>copy /Y "F:\GitHub\Tarkov\SPT-FastInFleaSell\bin\Debug\Kat.FastSellInFlea.dll" "F:\Games\SPT\BepInEx\plugins\Kat.FastSellInFlea.dll"</PostBuildEvent>
+        <PostBuildEvent>copy /Y "F:\GitHub\Tarkov\SPT-FastInFleaSell\bin\Debug\Kat.FastSellInFlea.dll" "F:\Games\SPT-Dev\BepInEx\plugins\Kat.FastSellInFlea.dll"</PostBuildEvent>
     </PropertyGroup>
     <ItemGroup>
         <Reference Include="0Harmony">
