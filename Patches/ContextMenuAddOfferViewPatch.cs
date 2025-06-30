@@ -35,7 +35,7 @@ namespace FastSellInFlea.Patches
                     FastSellInFleaPlugin.CachedTextButton = ____text;
                     FastSellInFleaPlugin.TryGetPrice(FastSellInFleaPlugin.LastCacheItem, price =>
                     {
-                        if (FastSellInFleaPlugin.IsKeyPressed)
+                        if (FastSellInFleaPlugin.IsKeyHold)
                         {
                             FastSellInFleaPlugin.CachedTextButton.text = $"{clearText} {price}RUB".ToUpper();
                         }

@@ -104,6 +104,7 @@
         <Compile Include="Models\SettingsModel.cs"/>
         <Compile Include="Patches\CatchAddOfferClickPatch.cs" />
         <Compile Include="Patches\CatchIDItemPatch.cs" />
+        <Compile Include="Patches\GridItemOnPointerEnterPatch.cs" />
         <Compile Include="Patches\CatchMainMenuOpenPatch.cs" />
         <Compile Include="Patches\ContextMenuAddOfferViewPatch.cs" />
         <Compile Include="Patches\ContextMenuClosePatch.cs" />

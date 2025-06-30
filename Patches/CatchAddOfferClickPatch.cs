@@ -20,7 +20,7 @@ namespace FastSellInFlea.Patches
         [PatchPrefix]
         static bool Prefix()
         {
-            if (FastSellInFleaPlugin.IsKeyPressed)
+            if (FastSellInFleaPlugin.IsKeyHold)
             {
                 if (FastSellInFleaPlugin.LastCacheItem == null)
                 {

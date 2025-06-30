@@ -1,6 +1,8 @@
 ﻿using System;
 using BepInEx;
 using BepInEx.Logging;
+using Comfort.Common;
+using EFT;
 using EFT.Communications;
 using EFT.InventoryLogic;
 using EFT.UI;
@@ -20,7 +22,8 @@ namespace FastSellInFlea
         public static ManualLogSource logSource;
         public static ISession Session => ClientAppUtils.GetMainApp().GetClientBackEndSession();
         
-        public static bool IsKeyPressed;
+        public static bool IsKeyHold;
+        public static bool IsKeyPress;
         
         public static double LastCachePrice;
         public static Item LastCacheItem;
@@ -29,7 +32,42 @@ namespace FastSellInFlea
         
         public static TextMeshProUGUI CachedTextButton = null;
         public static SimpleContextMenu MainContextMenu;
+        public static bool isStashItemHovered;
         
+        public static bool HasRaidStarted()
+        {			
+            bool? inRaid = Singleton<AbstractGame>.Instance?.InRaid;
+            return inRaid.HasValue && inRaid.Value;
+        }
+        
+        public bool FleaIsAvailable()
+        {
+            if (Session != null)
+            {
+                RagFairClass rag = Session.RagFair;
+                if (rag != null && rag.Available)
+                {
+                    return true;
+                }
+
+                return false;
+            }
+            return false;
+        }
+
+        public static bool CanBeSelectedAtRagfair(Item item)
+        {
+            if (item.Owner.OwnerType != EOwnerType.Profile &&
+                item.Owner.GetType() == typeof(TraderControllerClass))
+                return false;
+            if (!item.CanSellOnRagfair)
+                return false;
+            if (Session.RagFair.MyOffersCount >= Session.RagFair.MaxOffersCount)
+                return false;
+            
+            return true;
+        }
+
         private void Awake()
         {
             _settings = SettingsModel.Create(Config);
@@ -39,6 +77,8 @@ namespace FastSellInFlea
             new ContextMenuAddOfferViewPatch().Enable();
             new ContextMenuClosePatch().Enable();
             new CatchMainMenuOpenPatch().Enable();
+            new GridItemOnPointerEnterPatch().Enable();
+            new GridItemOnPointerExitPatch().Enable();
             
             logSource = Logger;
             logSource.LogInfo("FastSellInFlea successful loaded!");
@@ -46,24 +86,57 @@ namespace FastSellInFlea
         
         private void Update()
         {
-            IsKeyPressed = SettingsModel.Instance.KeyBind.Value.IsPressed();
-
+            IsKeyHold = SettingsModel.Instance.KeyBind.Value.IsPressed();
+            IsKeyPress = SettingsModel.Instance.KeyBindHover.Value.IsDown();
+            
             //Updating view for button if it !null
             if (CachedTextButton)
             {
-                if (IsKeyPressed && !string.IsNullOrEmpty(CachedNewText))
+                if (FleaIsAvailable())
                 {
-                    CachedTextButton.text = $"{CachedNewText} {LastCachePrice}RUB".ToUpper();
+                    if (IsKeyHold && !string.IsNullOrEmpty(CachedNewText))
+                    {
+                        CachedTextButton.text = $"{CachedNewText} {LastCachePrice}RUB".ToUpper();
+                    }
+                    else
+                    {
+                        CachedTextButton.text = CachedOriginalText.ToUpper();
+                    }
                 }
-                else
+            }
+
+            //Add offer when hover on item
+            if (isStashItemHovered)
+            {
+                if (FleaIsAvailable())
                 {
-                    CachedTextButton.text = CachedOriginalText.ToUpper();
+                    if (IsKeyPress)
+                    {
+                        if (LastCacheItem != null && Session.Profile.Examined(LastCacheItem) && !HasRaidStarted())
+                        {
+                            if(!CanBeSelectedAtRagfair(LastCacheItem))
+                                return;
+
+                            TryGetPrice(LastCacheItem, price =>
+                            {
+                                LastCachePrice = price;
+                                TryAddOfferToFlea(LastCacheItem, LastCachePrice, result =>
+                                {
+                                    CachedTextButton = null;
+                                    CachedOriginalText = "";
+                                    CachedNewText = "";
+                                    LastCacheItem = null;
+                                    LastCachePrice = 0.0;
+                                });
+                            });
+                        }
+                    }
                 }
             }
         }
         
         /// <summary>
-        /// Trying add offer to flea with Item and Adjusted price
+        /// Trying to add offer to flea with Item and Adjusted price
         /// </summary>
         /// <param name="item"></param>
         /// <param name="adjustedPrice"></param>
@@ -79,6 +152,27 @@ namespace FastSellInFlea
             FleaRequirement[] gs = new FleaRequirement[1] { g };
             Session.RagFair.AddOffer(false, new string[1] { item.Id }, gs, null);
             NotificationManagerClass.DisplayMessageNotification($"Sell offer for {g.count}RUB", ENotificationDurationType.Default, ENotificationIconType.EntryPoint);
+        }
+        
+        /// <summary>
+        /// Trying to add offer to flea with Item and Adjusted price. With callback
+        /// </summary>
+        /// <param name="item"></param>
+        /// <param name="adjustedPrice"></param>
+        /// <param name="callback"></param>
+        public static void TryAddOfferToFlea(Item item, double adjustedPrice, Action<bool> callback)
+        {
+            //Used some code from LootValue repository
+            var g = new FleaRequirement()
+            {
+                count = adjustedPrice,
+                _tpl = "5449016a4bdc2d6f028b456f"
+            };
+            
+            FleaRequirement[] gs = new FleaRequirement[1] { g };
+            Session.RagFair.AddOffer(false, new string[1] { item.Id }, gs, null);
+            NotificationManagerClass.DisplayMessageNotification($"Sell offer for {g.count}RUB", ENotificationDurationType.Default, ENotificationIconType.EntryPoint);
+            callback(true);
         }
         
         /// <summary>
@@ -106,7 +200,7 @@ namespace FastSellInFlea
                             _ => result.Value.avg - 1
                         };
                     }
-                    else
+                    else if (SettingsModel.Instance.TypeAdjustPrice.Value == TypeMathPrice.Percent)
                     {
                         price = SettingsModel.Instance.OfferPresetFlea.Value switch
                         {
@@ -120,6 +214,7 @@ namespace FastSellInFlea
                         };
                     }
                 }
+                
                 price = Math.Max(1, (int)Math.Round(price));
                 LastCachePrice = price;
                 callback(price);

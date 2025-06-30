@@ -11,6 +11,7 @@ namespace FastSellInFlea.Models
 		public static SettingsModel Instance { get; private set; }
 		
 		public ConfigEntry<KeyboardShortcut> KeyBind;
+		public ConfigEntry<KeyboardShortcut> KeyBindHover;
 		public ConfigEntry<AutoFleaPrice> OfferPresetFlea;
 		public ConfigEntry<TypeMathPrice> TypeAdjustPrice;
 		public ConfigEntry<int> SubstractPriceValue;
@@ -27,8 +28,20 @@ namespace FastSellInFlea.Models
 					null, 
 					new ConfigurationManagerAttributes
 					{
-						Order = 4
+						Order = 5
 					})); 
+			
+			KeyBindHover = configFile.Bind(
+				"Settings", 
+				"Quick Offer Press Key When Hover", 
+				new KeyboardShortcut(KeyCode.LeftShift), 
+				new ConfigDescription(
+					"Press keybind when hover on item",
+					null, 
+					new ConfigurationManagerAttributes
+					{
+						Order = 4
+					}));
 			
 			OfferPresetFlea = configFile.Bind(
 				"Settings", 
