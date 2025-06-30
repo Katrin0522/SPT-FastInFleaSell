@@ -95,9 +95,9 @@ namespace FastSellInFlea
                 {
                     price = SettingsModel.Instance.OfferPresetFlea.Value switch
                     {
-                        AutoFleaPrice.Minimum => result.Value.min - SettingsModel.Instance.AdjustPriceValue.Value,
-                        AutoFleaPrice.Average => result.Value.avg - SettingsModel.Instance.AdjustPriceValue.Value,
-                        AutoFleaPrice.Maximum => result.Value.max - SettingsModel.Instance.AdjustPriceValue.Value,
+                        AutoFleaPrice.Minimum => result.Value.min - SettingsModel.Instance.SubstractPriceValue.Value,
+                        AutoFleaPrice.Average => result.Value.avg - SettingsModel.Instance.SubstractPriceValue.Value,
+                        AutoFleaPrice.Maximum => result.Value.max - SettingsModel.Instance.SubstractPriceValue.Value,
                         _ => result.Value.avg - 1
                     };
                 }
@@ -117,5 +117,14 @@ namespace FastSellInFlea
         Minimum,
         Average,
         Maximum
+    }
+    
+    /// <summary>
+    /// Types math for adjust price
+    /// </summary>
+    public enum TypeMathPrice
+    {
+        Value,
+        Percent
     }
 }

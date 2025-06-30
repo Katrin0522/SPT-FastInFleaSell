@@ -12,7 +12,9 @@ namespace FastSellInFlea.Models
 		
 		public ConfigEntry<KeyboardShortcut> KeyBind;
 		public ConfigEntry<AutoFleaPrice> OfferPresetFlea;
-		public ConfigEntry<int> AdjustPriceValue;
+		public ConfigEntry<TypeMathPrice> TypeAdjustPrice;
+		public ConfigEntry<int> SubstractPriceValue;
+		public ConfigEntry<int> SubstractPricePercent;
 
 		private SettingsModel(ConfigFile configFile)
 		{
@@ -20,21 +22,62 @@ namespace FastSellInFlea.Models
 				"Settings", 
 				"Quick Offer Hold Key", 
 				new KeyboardShortcut(KeyCode.LeftShift), 
-				"Hold this key to show quick offer adding when opened context menu"); 
+				new ConfigDescription(
+					"Hold this key to show quick offer adding when opened context menu",
+					null, 
+					new ConfigurationManagerAttributes
+					{
+						Order = 4
+					})); 
 			
 			OfferPresetFlea = configFile.Bind(
 				"Settings", 
 				"Flea Market Price Preset",
 				AutoFleaPrice.Average,
-				"Choose how your offer price will be based on market values");
+				new ConfigDescription(
+					"Choose how your offer price will be based on market values",
+					null, 
+					new ConfigurationManagerAttributes
+					{
+						Order = 3
+					}));
 			
-			AdjustPriceValue = configFile.Bind(
+			TypeAdjustPrice = configFile.Bind(
+				"Settings", 
+				"Type Adjust Price",
+				TypeMathPrice.Value,
+				new ConfigDescription(
+					"TypeValue -> RawPrice - Value\nTypePercent -> RawPrice - percent%(RawPrice)",
+					null, 
+					new ConfigurationManagerAttributes
+					{
+						Order = 2
+					}));
+			
+			SubstractPriceValue = configFile.Bind(
 				"Settings", 
 				"Price Subtract Value",
 				1,
 				new ConfigDescription(
 					"The amount to subtract from the fetched flea price before add offer.",
-					new AcceptableValueRange<int>(0, 9999999)
+					new AcceptableValueRange<int>(0, 9999999), 
+					new ConfigurationManagerAttributes
+					{
+						Order = 1
+					}
+				));
+			
+			SubstractPricePercent = configFile.Bind(
+				"Settings", 
+				"Price Subtract Percent %",
+				1,
+				new ConfigDescription(
+					"The percent% to subtract from the fetched flea price before add offer.",
+					new AcceptableValueRange<int>(0, 99), 
+					new ConfigurationManagerAttributes
+					{
+						Order = 0
+					}
 				));
 		}
 		
