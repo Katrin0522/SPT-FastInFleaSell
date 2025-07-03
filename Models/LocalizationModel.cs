@@ -33,8 +33,8 @@ namespace FastSellInFlea.Models
         {
             { "ch", "添加报价时出错" },
             { "cz", "Chyba při přidávání nabídky" },
-            { "en", "Error while adding offer" },
-            { "fr", "Erreur lors de l'ajout de l'offre" },
+            { "en", "Error when adding offer" },
+            { "fr", "Erreur lors de l'ajout d'une offre" },
             { "ge", "Fehler beim Hinzufügen des Angebots" },
             { "hu", "Hiba az ajánlat hozzáadásakor" },
             { "it", "Errore durante l'aggiunta dell'offerta" },
