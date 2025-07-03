@@ -25,6 +25,7 @@ namespace FastSellInFlea.Patches
             {
                 if (FastSellInFleaPlugin.LastCacheItem == null)
                 {
+                    FastSellInFleaPlugin.logSource.LogError($"LastCacheItem is NUll? -> {FastSellInFleaPlugin.LastCacheItem == null}\nLastCachePrice is NUll? -> {FastSellInFleaPlugin.LastCachePrice <= 0}\nMainContextMenu is NUll? -> {FastSellInFleaPlugin.MainContextMenu == null}");
                     NotificationManagerClass.DisplayWarningNotification(LocalizationModel.Instance.GetLocaleText(TypeText.ErrorAddOffer),
                         ENotificationDurationType.Long);
                     return true;
