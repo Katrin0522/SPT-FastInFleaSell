@@ -101,6 +101,7 @@
     <ItemGroup>
         <Compile Include="FastSellInFleaPlugin.cs" />
         <Compile Include="Models\ConfigurationManagerAttributes.cs" />
+        <Compile Include="Models\LocalizationModel.cs" />
         <Compile Include="Models\SettingsModel.cs"/>
         <Compile Include="Patches\CatchAddOfferClickPatch.cs" />
         <Compile Include="Patches\CatchIDItemPatch.cs" />

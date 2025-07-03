@@ -18,6 +18,7 @@ namespace FastSellInFlea
     public class FastSellInFleaPlugin : BaseUnityPlugin
     {
         private SettingsModel _settings;
+        private LocalizationModel _localization;
         
         public static ManualLogSource logSource;
         public static ISession Session => ClientAppUtils.GetMainApp().GetClientBackEndSession();
@@ -32,7 +33,7 @@ namespace FastSellInFlea
         
         public static TextMeshProUGUI CachedTextButton = null;
         public static SimpleContextMenu MainContextMenu;
-        public static bool isStashItemHovered;
+        public static bool IsStashItemHovered;
         
         public static bool HasRaidStarted()
         {			
@@ -71,6 +72,7 @@ namespace FastSellInFlea
         private void Awake()
         {
             _settings = SettingsModel.Create(Config);
+            _localization = LocalizationModel.Create();
             
             new CatchAddOfferClickPatch().Enable();
             new CatchIDItemPatch().Enable();
@@ -106,7 +108,7 @@ namespace FastSellInFlea
             }
 
             //Add offer when hover on item
-            if (isStashItemHovered)
+            if (IsStashItemHovered)
             {
                 if (FleaIsAvailable())
                 {
@@ -143,15 +145,15 @@ namespace FastSellInFlea
         public static void TryAddOfferToFlea(Item item, double adjustedPrice)
         {
             //Used some code from LootValue repository
-            var g = new FleaRequirement()
+            var dataOffer = new FleaRequirement()
             {
                 count = adjustedPrice,
                 _tpl = "5449016a4bdc2d6f028b456f"
             };
             
-            FleaRequirement[] gs = new FleaRequirement[1] { g };
+            FleaRequirement[] gs = new FleaRequirement[1] { dataOffer };
             Session.RagFair.AddOffer(false, new string[1] { item.Id }, gs, null);
-            NotificationManagerClass.DisplayMessageNotification($"Sell offer for {g.count}RUB", ENotificationDurationType.Default, ENotificationIconType.EntryPoint);
+            NotificationManagerClass.DisplayMessageNotification(LocalizationModel.Instance.GetLocaleText(TypeText.AddOffer, dataOffer.count), ENotificationDurationType.Default, ENotificationIconType.EntryPoint);
         }
         
         /// <summary>
@@ -163,15 +165,15 @@ namespace FastSellInFlea
         public static void TryAddOfferToFlea(Item item, double adjustedPrice, Action<bool> callback)
         {
             //Used some code from LootValue repository
-            var g = new FleaRequirement()
+            var dataOffer = new FleaRequirement()
             {
                 count = adjustedPrice,
                 _tpl = "5449016a4bdc2d6f028b456f"
             };
             
-            FleaRequirement[] gs = new FleaRequirement[1] { g };
+            FleaRequirement[] gs = new FleaRequirement[1] { dataOffer };
             Session.RagFair.AddOffer(false, new string[1] { item.Id }, gs, null);
-            NotificationManagerClass.DisplayMessageNotification($"Sell offer for {g.count}RUB", ENotificationDurationType.Default, ENotificationIconType.EntryPoint);
+            NotificationManagerClass.DisplayMessageNotification(LocalizationModel.Instance.GetLocaleText(TypeText.AddOffer, dataOffer.count), ENotificationDurationType.Default, ENotificationIconType.EntryPoint);
             callback(true);
         }
         

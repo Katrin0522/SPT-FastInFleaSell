@@ -1,5 +1,6 @@
 ﻿using System.Reflection;
 using EFT.Communications;
+using FastSellInFlea.Models;
 using HarmonyLib;
 using SPT.Reflection.Patching;
 
@@ -24,7 +25,7 @@ namespace FastSellInFlea.Patches
             {
                 if (FastSellInFleaPlugin.LastCacheItem == null)
                 {
-                    NotificationManagerClass.DisplayWarningNotification("Maybe not have price",
+                    NotificationManagerClass.DisplayWarningNotification(LocalizationModel.Instance.GetLocaleText(TypeText.ErrorAddOffer),
                         ENotificationDurationType.Long);
                     return true;
                 }

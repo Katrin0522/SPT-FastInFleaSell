@@ -14,7 +14,7 @@ namespace FastSellInFlea.Patches
             if (__instance.Item != null)
             {
                 FastSellInFleaPlugin.LastCacheItem = __instance.Item;
-                FastSellInFleaPlugin.isStashItemHovered = true;
+                FastSellInFleaPlugin.IsStashItemHovered = true;
             }
         }
     }
@@ -28,7 +28,7 @@ namespace FastSellInFlea.Patches
         {
             if (FastSellInFleaPlugin.MainContextMenu == null)
             {
-                FastSellInFleaPlugin.isStashItemHovered = false;
+                FastSellInFleaPlugin.IsStashItemHovered = false;
                 FastSellInFleaPlugin.LastCacheItem = null;
             }
         }
