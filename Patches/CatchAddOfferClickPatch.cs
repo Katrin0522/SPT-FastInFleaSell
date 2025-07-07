@@ -31,6 +31,11 @@ namespace FastSellInFlea.Patches
                     return true;
                 }
 
+                if (FastSellInFleaPlugin.LastCachePrice <= 0)
+                {
+                    return false;
+                }
+                
                 FastSellInFleaPlugin.TryAddOfferToFlea(FastSellInFleaPlugin.LastCacheItem,
                     FastSellInFleaPlugin.LastCachePrice);
                 return false;
