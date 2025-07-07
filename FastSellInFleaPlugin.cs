@@ -14,7 +14,7 @@ using FleaRequirement = GClass2102;
 
 namespace FastSellInFlea
 {
-    [BepInPlugin("katrin0522.FastSellInFlea", "Kat.FastSellInFlea", "1.0.2")]
+    [BepInPlugin("katrin0522.FastSellInFlea", "Kat.FastSellInFlea", "1.0.3")]
     public class FastSellInFleaPlugin : BaseUnityPlugin
     {
         private SettingsModel _settings;
@@ -122,6 +122,9 @@ namespace FastSellInFlea
                             TryGetPrice(LastCacheItem, price =>
                             {
                                 LastCachePrice = price;
+                                if(price <= 0)
+                                    return;
+                                
                                 TryAddOfferToFlea(LastCacheItem, LastCachePrice, result =>
                                 {
                                     CachedTextButton = null;
@@ -201,6 +204,12 @@ namespace FastSellInFlea
                                                      SettingsModel.Instance.SubstractPriceValue.Value,
                             _ => result.Value.avg - 1
                         };
+
+                        if (result.Value.min <= 0.0f && result.Value.avg <= 0.0f && result.Value.max <= 0.0f)
+                        {
+                            LastCachePrice = 0.0;
+                            callback(0.0f);
+                        }
                     }
                     else if (SettingsModel.Instance.TypeAdjustPrice.Value == TypeMathPrice.Percent)
                     {
@@ -214,10 +223,15 @@ namespace FastSellInFlea
                                                      (1 - (SettingsModel.Instance.SubstractPricePercent.Value / 100.0)),
                             _ => result.Value.avg * (1 - (99 / 100.0)),
                         };
+                        
+                        if (result.Value.min <= 0.0f && result.Value.avg <= 0.0f && result.Value.max <= 0.0f)
+                        {
+                            LastCachePrice = 0.0;
+                            callback(0.0f);
+                        }
                     }
                 }
-                
-                price = Math.Max(1, (int)Math.Round(price));
+                price = Math.Max(0, (int)Math.Round(price));
                 LastCachePrice = price;
                 callback(price);
             });
