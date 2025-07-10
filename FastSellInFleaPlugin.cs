@@ -58,14 +58,18 @@ namespace FastSellInFlea
 
         public static bool CanBeSelectedAtRagfair(Item item)
         {
-            if (item.Owner.OwnerType != EOwnerType.Profile &&
-                item.Owner.GetType() == typeof(TraderControllerClass))
+            if (item.Owner.OwnerType != EOwnerType.Profile && item.Owner.GetType() == typeof(TraderControllerClass))
                 return false;
             if (!item.CanSellOnRagfair)
                 return false;
             if (Session.RagFair.MyOffersCount >= Session.RagFair.MaxOffersCount)
                 return false;
+            if (item.PinLockState != EItemPinLockState.Free)
+                return false;
+            if (item.IsNotEmpty())
+                return false;
             
+                
             return true;
         }
 
@@ -236,7 +240,6 @@ namespace FastSellInFlea
                 callback(price);
             });
         }
-
     }
 
     /// <summary>
