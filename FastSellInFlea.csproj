@@ -110,6 +110,7 @@
         <Compile Include="Patches\ContextMenuAddOfferViewPatch.cs" />
         <Compile Include="Patches\ContextMenuClosePatch.cs" />
         <Compile Include="Properties\AssemblyInfo.cs"/>
+        <Compile Include="Utils\MultiSelectInterop.cs" />
     </ItemGroup>
     <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets"/>
 </Project>
