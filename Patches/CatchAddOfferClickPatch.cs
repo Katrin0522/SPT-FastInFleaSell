@@ -43,15 +43,16 @@ namespace FastSellInFlea.Patches
                     var maxOffersCountNow = FastSellInFleaPlugin.Session.RagFair.MaxOffersCount;
                     int offersAdded = 0;
                     int offerLimit = maxOffersCountNow - myOffersCountNow;
-                    
-                    foreach (var selectedItem in MultiSelect.Items)
+                    var itemsGrouped = FastSellInFleaPlugin.GroupSimilarItems(MultiSelect.Items);
+
+                    foreach (var selectedItem in itemsGrouped)
                     {
                         if (offersAdded >= offerLimit)
                             break;
                         
-                        if (FastSellInFleaPlugin.CanBeSelectedAtRagfair(selectedItem))
+                        if (FastSellInFleaPlugin.CanBeSelectedAtRagfair(selectedItem[0]))
                         {
-                            FastSellInFleaPlugin.TryGetPrice(selectedItem, price =>
+                            FastSellInFleaPlugin.TryGetPrice(selectedItem[0], price =>
                             {
                                 if (price <= 0 || offersAdded >= offerLimit)
                                     return;

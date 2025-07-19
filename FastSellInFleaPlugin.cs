@@ -1,5 +1,4 @@
-﻿using System;
-using BepInEx;
+﻿using BepInEx;
 using BepInEx.Logging;
 using Comfort.Common;
 using EFT;
@@ -9,6 +8,9 @@ using EFT.UI;
 using FastSellInFlea.Models;
 using FastSellInFlea.Patches;
 using SPT.Reflection.Utils;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using TMPro;
 using FleaRequirement = GClass2102;
 
@@ -143,13 +145,13 @@ namespace FastSellInFlea
                 }
             }
         }
-        
+
         /// <summary>
         /// Trying to add offer to flea with Item and Adjusted price
         /// </summary>
-        /// <param name="item"></param>
+        /// <param name="items"></param>
         /// <param name="adjustedPrice"></param>
-        public static void TryAddOfferToFlea(Item item, double adjustedPrice)
+        public static void TryAddOfferToFlea(IEnumerable<Item> items, double adjustedPrice)
         {
             //Used some code from LootValue repository
             var dataOffer = new FleaRequirement()
@@ -157,12 +159,23 @@ namespace FastSellInFlea
                 count = adjustedPrice,
                 _tpl = "5449016a4bdc2d6f028b456f"
             };
-            
+            string[] allIds = items
+            .Select(item => item.Id)
+            .ToArray();
             FleaRequirement[] gs = new FleaRequirement[1] { dataOffer };
-            Session.RagFair.AddOffer(false, new string[1] { item.Id }, gs, null);
+            Session.RagFair.AddOffer(false, allIds, gs, null);
             NotificationManagerClass.DisplayMessageNotification(LocalizationModel.Instance.GetLocaleText(TypeText.AddOffer, dataOffer.count), ENotificationDurationType.Default, ENotificationIconType.EntryPoint);
         }
-        
+        /// <summary>
+        /// overload for single item
+        /// </summary>
+        /// <param name="item"></param>
+        /// <param name="adjustedPrice"></param>
+        public static void TryAddOfferToFlea(Item item, double adjustedPrice)
+        {
+            TryAddOfferToFlea(new[] { item }, adjustedPrice);
+        }
+
         /// <summary>
         /// Trying to add offer to flea with Item and Adjusted price. With callback
         /// </summary>
@@ -239,6 +252,30 @@ namespace FastSellInFlea
                 LastCachePrice = price;
                 callback(price);
             });
+        }
+
+        /// <summary>
+        /// Groups items (same template/type/condition)
+        /// </summary>
+        /// <param name="items"></param>
+        public static List<List<Item>> GroupSimilarItems(IEnumerable<Item> items)
+        {
+            var itemGroups = new List<List<Item>>();
+            foreach (var item in items)
+            {
+                var matchingGroup = itemGroups.FirstOrDefault(group =>
+                    group.Any(groupItem => groupItem.Compare(item)));
+
+                if (matchingGroup != null)
+                {
+                    matchingGroup.Add(item);
+                }
+                else
+                {
+                    itemGroups.Add(new List<Item> { item });
+                }
+            }
+            return itemGroups;
         }
     }
 
