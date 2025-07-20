@@ -1,6 +1,7 @@
 ﻿using System.Reflection;
 using EFT.Communications;
 using FastSellInFlea.Models;
+using FastSellInFlea.Utils;
 using HarmonyLib;
 using SPT.Reflection.Patching;
 using UIFixesInterop;
@@ -22,7 +23,7 @@ namespace FastSellInFlea.Patches
         [PatchPrefix]
         static bool Prefix()
         {
-            if (FastSellInFleaPlugin.IsKeyHold)
+            if (FastSellInFleaPlugin.IsKeySellModeHold)
             {
                 if (FastSellInFleaPlugin.LastCacheItem == null)
                 {
@@ -39,27 +40,29 @@ namespace FastSellInFlea.Patches
 
                 if (MultiSelect.Count > 1)
                 {
-                    var myOffersCountNow = FastSellInFleaPlugin.Session.RagFair.MyOffersCount;
-                    var maxOffersCountNow = FastSellInFleaPlugin.Session.RagFair.MaxOffersCount;
+                    var myOffersCountNow = PlayerHelper.Session.RagFair.MyOffersCount;
+                    var maxOffersCountNow = PlayerHelper.Session.RagFair.MaxOffersCount;
+                    
                     int offersAdded = 0;
                     int offerLimit = maxOffersCountNow - myOffersCountNow;
-                    var itemsGrouped = FastSellInFleaPlugin.GroupSimilarItems(MultiSelect.Items);
+                    
+                    var itemsGrouped = FleaUtils.GroupSimilarItems(MultiSelect.Items);
 
-                    foreach (var selectedItem in itemsGrouped)
+                    foreach (var itemGrouped in itemsGrouped)
                     {
                         if (offersAdded >= offerLimit)
                             break;
                         
-                        if (FastSellInFleaPlugin.CanBeSelectedAtRagfair(selectedItem[0]))
+                        if (PlayerHelper.CanBeSelectedAtRagfair(itemGrouped[0]))
                         {
-                            FastSellInFleaPlugin.TryGetPrice(selectedItem[0], price =>
+                            FleaUtils.TryGetPrice(itemGrouped[0], price =>
                             {
                                 if (price <= 0 || offersAdded >= offerLimit)
                                     return;
                                 
                                 FastSellInFleaPlugin.LastCachePrice = price;
                                 offersAdded++;
-                                FastSellInFleaPlugin.TryAddOfferToFlea(selectedItem, price);
+                                FleaUtils.TryAddOfferToFlea(itemGrouped, price);
                             });
                         }
                     }
@@ -73,7 +76,7 @@ namespace FastSellInFlea.Patches
                 }
                 
                 
-                FastSellInFleaPlugin.TryAddOfferToFlea(FastSellInFleaPlugin.LastCacheItem,
+                FleaUtils.TryAddOfferToFlea(FastSellInFleaPlugin.LastCacheItem,
                     FastSellInFleaPlugin.LastCachePrice);
                 return false;
             }

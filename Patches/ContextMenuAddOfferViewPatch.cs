@@ -1,5 +1,6 @@
 ﻿using System.Reflection;
 using EFT.UI;
+using FastSellInFlea.Utils;
 using HarmonyLib;
 using SPT.Reflection.Patching;
 using TMPro;
@@ -19,7 +20,7 @@ namespace FastSellInFlea.Patches
         [PatchPostfix]
         public static void Postfix(string caption, TextMeshProUGUI ____text)
         {
-            RagFairClass ragFair = FastSellInFleaPlugin.Session.RagFair;
+            RagFairClass ragFair = PlayerHelper.Session.RagFair;
             if (ragFair != null && ragFair.Available)
             {
                 int myOffersCount = ragFair.MyOffersCount;
@@ -33,9 +34,9 @@ namespace FastSellInFlea.Patches
                 if (caption.Contains(clearText))
                 {
                     FastSellInFleaPlugin.CachedTextButton = ____text;
-                    FastSellInFleaPlugin.TryGetPrice(FastSellInFleaPlugin.LastCacheItem, price =>
+                    FleaUtils.TryGetPrice(FastSellInFleaPlugin.LastCacheItem, price =>
                     {
-                        if (FastSellInFleaPlugin.IsKeyHold)
+                        if (FastSellInFleaPlugin.IsKeySellModeHold)
                         {
                             FastSellInFleaPlugin.CachedTextButton.text = $"{clearText} {price}RUB".ToUpper();
                         }
