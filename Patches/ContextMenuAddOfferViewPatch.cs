@@ -38,7 +38,7 @@ namespace FastSellInFlea.Patches
                     {
                         if (FastSellInFleaPlugin.IsKeySellModeHold)
                         {
-                            FastSellInFleaPlugin.CachedTextButton.text = $"{clearText} {price}RUB".ToUpper();
+                            FastSellInFleaPlugin.CachedTextButton.text = $"{clearText} {string.Format("{0:N0}", price)} RUB".ToUpper();
                         }
                         else
                         {
