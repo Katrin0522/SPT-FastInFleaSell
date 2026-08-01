@@ -7,7 +7,7 @@ namespace FastSellInFlea.Utils;
 
 public static class PlayerHelper
 {
-    public static ISession Session => ClientAppUtils.GetMainApp().GetClientBackEndSession();
+    public static IEftSession Session => ClientAppUtils.GetMainApp().GetClientBackEndSession();
     
     public static bool HasRaidStarted()
     {			
@@ -19,7 +19,7 @@ public static class PlayerHelper
     {
         if (Session != null)
         {
-            RagFairClass rag = Session.RagFair;
+            var rag = Session.RagFair;
             if (rag != null && rag.Available)
             {
                 return true;
@@ -33,7 +33,7 @@ public static class PlayerHelper
 
     public static bool CanBeSelectedAtRagfair(Item item)
     {
-        if (item.Owner.OwnerType != EOwnerType.Profile && item.Owner.GetType() == typeof(TraderControllerClass))
+        if (item.Owner.OwnerType != EOwnerType.Profile && item.Owner.GetType() == typeof(ItemController))
             return false;
         if (!item.CanSellOnRagfair)
             return false;

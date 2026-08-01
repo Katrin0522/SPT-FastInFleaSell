@@ -1,5 +1,6 @@
 ﻿using System.Reflection;
 using EFT.Communications;
+using EFT.UI;
 using FastSellInFlea.Models;
 using FastSellInFlea.Utils;
 using HarmonyLib;
@@ -17,7 +18,7 @@ namespace FastSellInFlea.Patches
     {
         protected override MethodBase GetTargetMethod()
         {
-            return AccessTools.Method(typeof(ContextInteractionsAbstractClass), "method_6");
+            return AccessTools.Method(typeof(BaseItemContextInteractions), nameof(BaseItemContextInteractions.AddOffer));
         }
 
         [PatchPrefix]
@@ -28,7 +29,7 @@ namespace FastSellInFlea.Patches
                 if (FastSellInFleaPlugin.LastCacheItem == null)
                 {
                     FastSellInFleaPlugin.logSource.LogError($"LastCacheItem is NUll? -> {FastSellInFleaPlugin.LastCacheItem == null}\nLastCachePrice is NUll? -> {FastSellInFleaPlugin.LastCachePrice <= 0}\nMainContextMenu is NUll? -> {FastSellInFleaPlugin.MainContextMenu == null}");
-                    NotificationManagerClass.DisplayWarningNotification(LocalizationModel.Instance.GetLocaleText(TypeText.ErrorAddOffer),
+                    NotificationManager.DisplayWarningNotification(LocalizationModel.Instance.GetLocaleText(TypeText.ErrorAddOffer),
                         ENotificationDurationType.Long);
                     return true;
                 }

@@ -2,13 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using Comfort.Common;
+using EFT;
 using EFT.Communications;
 using EFT.InventoryLogic;
+using EFT.Trading;
 using FastSellInFlea.Models;
 using Newtonsoft.Json;
 using SPT.Common.Http;
 using UnityEngine;
-using FleaRequirement = GClass2335;
 
 namespace FastSellInFlea.Utils
 {
@@ -22,7 +23,7 @@ namespace FastSellInFlea.Utils
         public static void TryAddOfferToFlea(IEnumerable<Item> items, double adjustedPrice)
         {
             //Used some code from LootValue repository
-            var dataOffer = new FleaRequirement()
+            var dataOffer = new BarterTemplate()
             {
                 count = adjustedPrice,
                 _tpl = "5449016a4bdc2d6f028b456f"
@@ -37,7 +38,7 @@ namespace FastSellInFlea.Utils
                     id = item.Id,
                     tpl = item.TemplateId,
                     count = listItems.Count(),
-                    fee = Mathf.CeilToInt((float)FleaTaxCalculatorAbstractClass.CalculateTaxPrice(item, item.StackObjectsCount, adjustedPrice, true))
+                    fee = Mathf.CeilToInt((float)PriceCalculator.CalculateTaxPrice(item, item.StackObjectsCount, adjustedPrice, true))
                 
                 }.ToJson());
             }
@@ -46,7 +47,7 @@ namespace FastSellInFlea.Utils
                 .Select(item => item.Id)
                 .ToArray();
             
-            var itemController = new TraderControllerClass((Item) Singleton<ItemFactoryClass>.Instance.CreateFakeStash(), PlayerHelper.Session.Profile.ProfileId, PlayerHelper.Session.Profile.ProfileId);
+            var itemController = new ItemController(Singleton<ItemFactory>.Instance.CreateFakeStash(null), PlayerHelper.Session.Profile.ProfileId, PlayerHelper.Session.Profile.ProfileId);
             var callbackProcessor = new FleaCallbackProcessor();
             
             callbackProcessor.ItemController = itemController;
@@ -55,9 +56,9 @@ namespace FastSellInFlea.Utils
                 item.Parent.RaiseRemoveEvent(item, CommandStatus.Begin, itemController);
                 callbackProcessor.OfferItemDict.Add(item, item.Parent);
             }
-            FleaRequirement[] gs = [dataOffer];
+            BarterTemplate[] gs = [dataOffer];
             PlayerHelper.Session.RagFair.AddOffer(false, allIds, gs, callbackProcessor.ProcessCallback);
-            NotificationManagerClass.DisplayMessageNotification(LocalizationModel.Instance.GetLocaleText(TypeText.AddOffer, dataOffer.count), ENotificationDurationType.Default, ENotificationIconType.EntryPoint);
+            NotificationManager.DisplayMessageNotification(LocalizationModel.Instance.GetLocaleText(TypeText.AddOffer, dataOffer.count), ENotificationDurationType.Default, ENotificationIconType.EntryPoint);
         }
     
         /// <summary>
@@ -79,7 +80,7 @@ namespace FastSellInFlea.Utils
         public static void TryAddOfferToFlea(Item item, double adjustedPrice, Action<bool> callback)
         {
             //Used some code from LootValue repository
-            var dataOffer = new FleaRequirement()
+            var dataOffer = new BarterTemplate()
             {
                 count = adjustedPrice,
                 _tpl = "5449016a4bdc2d6f028b456f"
@@ -90,11 +91,11 @@ namespace FastSellInFlea.Utils
                 id = item.Id,
                 tpl = item.TemplateId,
                 count = 1,
-                fee = Mathf.CeilToInt((float)FleaTaxCalculatorAbstractClass.CalculateTaxPrice(item, item.StackObjectsCount, adjustedPrice, true))
+                fee = Mathf.CeilToInt((float)PriceCalculator.CalculateTaxPrice(item, item.StackObjectsCount, adjustedPrice, true))
             
             }.ToJson());
             
-            var itemController = new TraderControllerClass((Item) Singleton<ItemFactoryClass>.Instance.CreateFakeStash(), PlayerHelper.Session.Profile.ProfileId, PlayerHelper.Session.Profile.ProfileId);
+            var itemController = new ItemController(Singleton<ItemFactory>.Instance.CreateFakeStash(null), PlayerHelper.Session.Profile.ProfileId, PlayerHelper.Session.Profile.ProfileId);
             var callbackProcessor = new FleaCallbackProcessor();
             
             callbackProcessor.ItemController = itemController;
@@ -102,9 +103,9 @@ namespace FastSellInFlea.Utils
             item.Parent.RaiseRemoveEvent(item, CommandStatus.Begin, itemController);
             callbackProcessor.OfferItemDict.Add(item, item.Parent);
             
-            FleaRequirement[] gs = [dataOffer];
+            BarterTemplate[] gs = [dataOffer];
             PlayerHelper.Session.RagFair.AddOffer(false, new string[1] { item.Id }, gs, callbackProcessor.ProcessCallback);
-            NotificationManagerClass.DisplayMessageNotification(LocalizationModel.Instance.GetLocaleText(TypeText.AddOffer, dataOffer.count), ENotificationDurationType.Default, ENotificationIconType.EntryPoint);
+            NotificationManager.DisplayMessageNotification(LocalizationModel.Instance.GetLocaleText(TypeText.AddOffer, dataOffer.count), ENotificationDurationType.Default, ENotificationIconType.EntryPoint);
             callback(true);
         }
     

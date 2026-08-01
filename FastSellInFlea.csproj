@@ -32,7 +32,7 @@
         <WarningLevel>4</WarningLevel>
     </PropertyGroup>
     <PropertyGroup>
-        <TarkovDir Condition=" '$(TarkovDir)' == '' ">C:\Games\SPT4\</TarkovDir>
+        <TarkovDir Condition=" '$(TarkovDir)' == '' ">C:\SPT41\</TarkovDir>
         <TarkovPluginsSPTDir>$(TarkovDir)BepInEx\plugins\spt\</TarkovPluginsSPTDir>
         <TarkovManagedDir>$(TarkovDir)EscapeFromTarkov_Data\Managed\</TarkovManagedDir>
         <TarkovBepInExCoreDir>$(TarkovDir)BepInEx\core\</TarkovBepInExCoreDir>

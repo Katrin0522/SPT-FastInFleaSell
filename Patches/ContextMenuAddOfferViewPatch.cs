@@ -1,5 +1,7 @@
 ﻿using System.Reflection;
+using EFT;
 using EFT.UI;
+using EFT.UI.Ragfair;
 using FastSellInFlea.Utils;
 using HarmonyLib;
 using SPT.Reflection.Patching;
@@ -20,7 +22,7 @@ namespace FastSellInFlea.Patches
         [PatchPostfix]
         public static void Postfix(string caption, TextMeshProUGUI ____text)
         {
-            RagFairClass ragFair = PlayerHelper.Session.RagFair;
+            RagFair ragFair = PlayerHelper.Session.RagFair;
             if (ragFair != null && ragFair.Available)
             {
                 int myOffersCount = ragFair.MyOffersCount;
