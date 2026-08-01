@@ -13,7 +13,7 @@ namespace FastSellInFlea.Patches
     {
         protected override MethodBase GetTargetMethod()
         {
-            return AccessTools.Method(typeof(SimpleContextMenu), "Close");
+            return AccessTools.Method(typeof(SimpleContextMenu), nameof(SimpleContextMenu.Close));
         }
 
         [PatchPostfix]
@@ -26,6 +26,8 @@ namespace FastSellInFlea.Patches
                 FastSellInFleaPlugin.CachedNewText = "";
                 FastSellInFleaPlugin.LastCacheItem = null;
                 FastSellInFleaPlugin.LastCachePrice = 0.0;
+                FastSellInFleaPlugin.IsStashItemHovered = false;
+                FastSellInFleaPlugin.MainContextMenu = null;
             }
         }
     }

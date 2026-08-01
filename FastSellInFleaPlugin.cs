@@ -73,18 +73,20 @@ namespace FastSellInFlea
             {
                 if (IsKeySellPress)
                 {
-                    if (LastCacheItem != null && PlayerHelper.Session.Profile.Examined(LastCacheItem) && !PlayerHelper.HasRaidStarted())
+                    var item = LastCacheItem;
+                    if (item != null && PlayerHelper.Session?.Profile?.Examined(item) == true &&
+                        !PlayerHelper.HasRaidStarted() && PlayerHelper.CanBeSelectedAtRagfair(item))
                     {
-                        if(!PlayerHelper.CanBeSelectedAtRagfair(LastCacheItem))
-                            return;
-
-                        FleaUtils.TryGetPrice(LastCacheItem, price =>
+                        FleaUtils.TryGetPrice(item, price =>
                         {
-                            LastCachePrice = price;
-                            if(price <= 0)
+                            if (price <= 0 || !IsStashItemHovered || LastCacheItem != item ||
+                                !PlayerHelper.CanBeSelectedAtRagfair(item))
+                            {
                                 return;
-                                
-                            FleaUtils.TryAddOfferToFlea(LastCacheItem, LastCachePrice, _ =>
+                            }
+
+                            LastCachePrice = price;
+                            FleaUtils.TryAddOfferToFlea(item, price, _ =>
                             {
                                 CachedTextButton = null;
                                 CachedOriginalText = "";

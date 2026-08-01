@@ -10,7 +10,7 @@ namespace FastSellInFlea.Patches
     internal class CatchIDItemPatch : ModulePatch
     {
         protected override MethodBase GetTargetMethod() =>
-            typeof(GridItemView).GetMethod("OnClick", BindingFlags.Instance | BindingFlags.Public);
+            typeof(GridItemView).GetMethod(nameof(GridItemView.OnClick), BindingFlags.Instance | BindingFlags.Public);
 
         [PatchPrefix]
         static bool Prefix(GridItemView __instance)

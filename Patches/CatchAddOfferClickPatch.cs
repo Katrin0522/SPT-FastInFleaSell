@@ -1,4 +1,5 @@
 ﻿using System.Reflection;
+using System.Linq;
 using EFT.Communications;
 using EFT.UI;
 using FastSellInFlea.Models;
@@ -26,6 +27,11 @@ namespace FastSellInFlea.Patches
         {
             if (FastSellInFleaPlugin.IsKeySellModeHold)
             {
+                if (!PlayerHelper.CanQuickSell(FastSellInFleaPlugin.LastCacheItem))
+                {
+                    return true;
+                }
+
                 if (FastSellInFleaPlugin.LastCacheItem == null)
                 {
                     FastSellInFleaPlugin.logSource.LogError($"LastCacheItem is NUll? -> {FastSellInFleaPlugin.LastCacheItem == null}\nLastCachePrice is NUll? -> {FastSellInFleaPlugin.LastCachePrice <= 0}\nMainContextMenu is NUll? -> {FastSellInFleaPlugin.MainContextMenu == null}");
@@ -36,7 +42,7 @@ namespace FastSellInFlea.Patches
 
                 if (FastSellInFleaPlugin.LastCachePrice <= 0)
                 {
-                    return false;
+                    return true;
                 }
 
                 if (MultiSelect.Count > 1)
@@ -54,11 +60,12 @@ namespace FastSellInFlea.Patches
                         if (offersAdded >= offerLimit)
                             break;
                         
-                        if (PlayerHelper.CanBeSelectedAtRagfair(itemGrouped[0]))
+                        if (itemGrouped.All(PlayerHelper.CanBeSelectedAtRagfair))
                         {
                             FleaUtils.TryGetPrice(itemGrouped[0], price =>
                             {
-                                if (price <= 0 || offersAdded >= offerLimit)
+                                if (price <= 0 || offersAdded >= offerLimit ||
+                                    !itemGrouped.All(PlayerHelper.CanBeSelectedAtRagfair))
                                     return;
                                 
                                 FastSellInFleaPlugin.LastCachePrice = price;

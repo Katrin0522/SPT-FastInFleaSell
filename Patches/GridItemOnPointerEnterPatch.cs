@@ -6,7 +6,7 @@ namespace FastSellInFlea.Patches
 {
     internal class GridItemOnPointerEnterPatch : ModulePatch
     {
-        protected override MethodBase GetTargetMethod() => typeof(GridItemView).GetMethod("OnPointerEnter", BindingFlags.Instance | BindingFlags.Public);
+        protected override MethodBase GetTargetMethod() => typeof(GridItemView).GetMethod(nameof(GridItemView.OnPointerEnter), BindingFlags.Instance | BindingFlags.Public);
 
         [PatchPrefix]
         static void Prefix(GridItemView __instance)
@@ -21,7 +21,7 @@ namespace FastSellInFlea.Patches
     
     internal class GridItemOnPointerExitPatch : ModulePatch
     {
-        protected override MethodBase GetTargetMethod() => typeof(GridItemView).GetMethod("OnPointerExit", BindingFlags.Instance | BindingFlags.Public);
+        protected override MethodBase GetTargetMethod() => typeof(GridItemView).GetMethod(nameof(GridItemView.OnPointerExit), BindingFlags.Instance | BindingFlags.Public);
 
         [PatchPrefix]
         static void Prefix(GridItemView __instance)

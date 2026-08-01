@@ -1,7 +1,14 @@
 ﻿using Comfort.Common;
+using System;
+using System.Linq;
 using EFT;
 using EFT.InventoryLogic;
+using EFT.UI.Ragfair;
+using EFT.UI.Screens;
 using SPT.Reflection.Utils;
+using TMPro;
+using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 namespace FastSellInFlea.Utils;
 
@@ -33,18 +40,46 @@ public static class PlayerHelper
 
     public static bool CanBeSelectedAtRagfair(Item item)
     {
-        if (item.Owner.OwnerType != EOwnerType.Profile && item.Owner.GetType() == typeof(ItemController))
+        if (!CanQuickSell(item) || !(item.Owner is ItemController itemController))
             return false;
-        if (!item.CanSellOnRagfair)
+
+        var ragFair = Session?.RagFair;
+        if (ragFair == null || !ragFair.Available)
             return false;
-        if (Session.RagFair.MyOffersCount >= Session.RagFair.MaxOffersCount)
+        if (ragFair.MyOffersCount >= ragFair.MaxOffersCount)
             return false;
         if (item.PinLockState != EItemPinLockState.Free)
             return false;
-        if (item.IsNotEmpty())
+
+        return RagFair.CanBeSelectedAtRagfair(item, itemController, out _);
+    }
+
+    public static bool CanQuickSell(Item item)
+    {
+        if (item == null || IsTextInputFocused() || IsPostRaidScavTransferOpen())
             return false;
-            
-                
-        return true;
+
+        var inventory = Session?.Profile?.Inventory;
+        return inventory != null && inventory.GetPlayerItems(EPlayerItems.All)
+            .Any(playerItem => ReferenceEquals(playerItem, item));
+    }
+
+    public static bool IsTextInputFocused()
+    {
+        var selected = EventSystem.current?.currentSelectedGameObject;
+        if (selected == null)
+            return false;
+
+        var tmpInput = selected.GetComponentInParent<TMP_InputField>();
+        if (tmpInput != null && tmpInput.isActiveAndEnabled && tmpInput.isFocused)
+            return true;
+
+        var input = selected.GetComponentInParent<InputField>();
+        return input != null && input.isActiveAndEnabled && input.isFocused;
+    }
+
+    private static bool IsPostRaidScavTransferOpen()
+    {
+        return EftScreenManager.Instance?.CheckCurrentScreen(EEftScreenType.ScavInventory) == true;
     }
 }

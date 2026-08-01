@@ -55,11 +55,8 @@ namespace FastSellInFlea.Models
 
         private string CurrentLanguage()
         {
-            if (Singleton<SettingsManager>.Instance.Game.Settings.Language == null)
-            {
-                return "en";
-            }
-            return Singleton<SettingsManager>.Instance.Game.Settings.Language;
+            var language = Singleton<SettingsManager>.Instance?.Game?.Settings?.Language?.Value;
+            return string.IsNullOrEmpty(language) ? "en" : language;
         }
         
         public static LocalizationModel Create()

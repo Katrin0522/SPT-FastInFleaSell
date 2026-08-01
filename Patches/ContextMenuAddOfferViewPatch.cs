@@ -16,14 +16,15 @@ namespace FastSellInFlea.Patches
     {
         protected override MethodBase GetTargetMethod()
         {
-            return AccessTools.Method(typeof(ContextMenuButton), "Show");
+            return AccessTools.Method(typeof(ContextMenuButton), nameof(ContextMenuButton.Show));
         }
 
         [PatchPostfix]
         public static void Postfix(string caption, TextMeshProUGUI ____text)
         {
-            RagFair ragFair = PlayerHelper.Session.RagFair;
-            if (ragFair != null && ragFair.Available)
+            RagFair ragFair = PlayerHelper.Session?.RagFair;
+            var item = FastSellInFleaPlugin.LastCacheItem;
+            if (ragFair != null && ragFair.Available && PlayerHelper.CanQuickSell(item) && ____text != null)
             {
                 int myOffersCount = ragFair.MyOffersCount;
                 int maxOffersCount = ragFair.MaxOffersCount;
@@ -35,16 +36,25 @@ namespace FastSellInFlea.Patches
                 FastSellInFleaPlugin.CachedNewText = clearText;
                 if (caption.Contains(clearText))
                 {
-                    FastSellInFleaPlugin.CachedTextButton = ____text;
-                    FleaUtils.TryGetPrice(FastSellInFleaPlugin.LastCacheItem, price =>
+                    var button = ____text;
+                    FastSellInFleaPlugin.CachedTextButton = button;
+                    FastSellInFleaPlugin.LastCachePrice = 0;
+                    FleaUtils.TryGetPrice(item, price =>
                     {
+                        if (!button || FastSellInFleaPlugin.CachedTextButton != button ||
+                            FastSellInFleaPlugin.LastCacheItem != item || !PlayerHelper.CanQuickSell(item))
+                        {
+                            return;
+                        }
+
+                        FastSellInFleaPlugin.LastCachePrice = price;
                         if (FastSellInFleaPlugin.IsKeySellModeHold)
                         {
-                            FastSellInFleaPlugin.CachedTextButton.text = $"{clearText} {price}RUB".ToUpper();
+                            button.text = $"{clearText} {price}RUB".ToUpper();
                         }
                         else
                         {
-                            FastSellInFleaPlugin.CachedTextButton.text = textWithCount.ToUpper();
+                            button.text = textWithCount.ToUpper();
                         }
                     });
                 }

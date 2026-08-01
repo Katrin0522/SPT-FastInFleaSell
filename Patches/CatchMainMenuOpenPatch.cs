@@ -12,7 +12,7 @@ namespace FastSellInFlea.Patches
     {
         protected override MethodBase GetTargetMethod()
         {
-            return AccessTools.Method(typeof(ItemUiContext), "ShowContextMenu");
+            return AccessTools.Method(typeof(ItemUiContext), nameof(ItemUiContext.ShowContextMenu));
         }
 
         [PatchPostfix]

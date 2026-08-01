@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Comfort.Common;
 using EFT;
 using EFT.Communications;
 using EFT.InventoryLogic;
@@ -31,6 +30,12 @@ namespace FastSellInFlea.Utils
 
             var listItems = items.ToList();
             
+            if (listItems.Count == 0 || !(listItems[0].Owner is ItemController itemController) ||
+                listItems.Any(item => !ReferenceEquals(item.Owner, itemController)))
+            {
+                return;
+            }
+
             foreach (var item in listItems)
             {
                 RequestHandler.PutJson("/client/ragfair/offerfees", new
@@ -47,7 +52,6 @@ namespace FastSellInFlea.Utils
                 .Select(item => item.Id)
                 .ToArray();
             
-            var itemController = new ItemController(Singleton<ItemFactory>.Instance.CreateFakeStash(null), PlayerHelper.Session.Profile.ProfileId, PlayerHelper.Session.Profile.ProfileId);
             var callbackProcessor = new FleaCallbackProcessor();
             
             callbackProcessor.ItemController = itemController;
@@ -79,6 +83,12 @@ namespace FastSellInFlea.Utils
         /// <param name="callback"></param>
         public static void TryAddOfferToFlea(Item item, double adjustedPrice, Action<bool> callback)
         {
+            if (item == null || !(item.Owner is ItemController itemController))
+            {
+                callback(false);
+                return;
+            }
+
             //Used some code from LootValue repository
             var dataOffer = new BarterTemplate()
             {
@@ -95,7 +105,6 @@ namespace FastSellInFlea.Utils
             
             }.ToJson());
             
-            var itemController = new ItemController(Singleton<ItemFactory>.Instance.CreateFakeStash(null), PlayerHelper.Session.Profile.ProfileId, PlayerHelper.Session.Profile.ProfileId);
             var callbackProcessor = new FleaCallbackProcessor();
             
             callbackProcessor.ItemController = itemController;
@@ -116,52 +125,70 @@ namespace FastSellInFlea.Utils
         /// <param name="callback"></param>
         public static void TryGetPrice(Item item, Action<double> callback)
         {
-            PlayerHelper.Session.GetMarketPrices(item.TemplateId, result =>
-            {
-                double price = 0;
-                if (result.Value != null)
-                {
-                    if (SettingsModel.Instance.TypeAdjustPrice.Value == TypeMathPrice.Value)
-                    {
-                        price = SettingsModel.Instance.OfferPresetFlea.Value switch
-                        {
-                            AutoFleaPrice.Minimum => result.Value.min -
-                                                     SettingsModel.Instance.SubstractPriceValue.Value,
-                            AutoFleaPrice.Average => result.Value.avg -
-                                                     SettingsModel.Instance.SubstractPriceValue.Value,
-                            AutoFleaPrice.Maximum => result.Value.max -
-                                                     SettingsModel.Instance.SubstractPriceValue.Value,
-                            _ => result.Value.avg - 1
-                        };
+            if (callback == null)
+                return;
 
-                        if (result.Value.min <= 0.0f && result.Value.avg <= 0.0f && result.Value.max <= 0.0f)
-                        {
-                            FastSellInFleaPlugin.LastCachePrice = 0.0;
-                            callback(0.0f);
-                        }
-                    }
-                    else if (SettingsModel.Instance.TypeAdjustPrice.Value == TypeMathPrice.Percent)
+            var session = PlayerHelper.Session;
+            var templateId = item == null ? null : item.TemplateId.ToString();
+            if (session == null || string.IsNullOrWhiteSpace(templateId) || templateId.Length != 24 ||
+                !templateId.All(Uri.IsHexDigit))
+            {
+                callback(0.0);
+                return;
+            }
+
+            session.GetMarketPrices(templateId, result =>
+            {
+                if (!result.Succeed || result.Value == null)
+                {
+                    callback(0.0);
+                    return;
+                }
+
+                var prices = result.Value;
+                if (float.IsNaN(prices.min) || float.IsInfinity(prices.min) ||
+                    float.IsNaN(prices.avg) || float.IsInfinity(prices.avg) ||
+                    float.IsNaN(prices.max) || float.IsInfinity(prices.max))
+                {
+                    callback(0.0);
+                    return;
+                }
+
+                double price = 0;
+                if (SettingsModel.Instance.TypeAdjustPrice.Value == TypeMathPrice.Value)
+                {
+                    price = SettingsModel.Instance.OfferPresetFlea.Value switch
                     {
-                        price = SettingsModel.Instance.OfferPresetFlea.Value switch
-                        {
-                            AutoFleaPrice.Minimum => result.Value.min *
-                                                     (1 - (SettingsModel.Instance.SubstractPricePercent.Value / 100.0)),
-                            AutoFleaPrice.Average => result.Value.avg *
-                                                     (1 - (SettingsModel.Instance.SubstractPricePercent.Value / 100.0)),
-                            AutoFleaPrice.Maximum => result.Value.max *
-                                                     (1 - (SettingsModel.Instance.SubstractPricePercent.Value / 100.0)),
-                            _ => result.Value.avg * (1 - (99 / 100.0)),
-                        };
-                    
-                        if (result.Value.min <= 0.0f && result.Value.avg <= 0.0f && result.Value.max <= 0.0f)
-                        {
-                            FastSellInFleaPlugin.LastCachePrice = 0.0;
-                            callback(0.0f);
-                        }
+                        AutoFleaPrice.Minimum => prices.min - SettingsModel.Instance.SubstractPriceValue.Value,
+                        AutoFleaPrice.Average => prices.avg - SettingsModel.Instance.SubstractPriceValue.Value,
+                        AutoFleaPrice.Maximum => prices.max - SettingsModel.Instance.SubstractPriceValue.Value,
+                        _ => prices.avg - 1
+                    };
+
+                    if (prices.min <= 0.0f && prices.avg <= 0.0f && prices.max <= 0.0f)
+                    {
+                        callback(0.0);
+                        return;
                     }
                 }
+                else if (SettingsModel.Instance.TypeAdjustPrice.Value == TypeMathPrice.Percent)
+                {
+                    price = SettingsModel.Instance.OfferPresetFlea.Value switch
+                    {
+                        AutoFleaPrice.Minimum => prices.min * (1 - (SettingsModel.Instance.SubstractPricePercent.Value / 100.0)),
+                        AutoFleaPrice.Average => prices.avg * (1 - (SettingsModel.Instance.SubstractPricePercent.Value / 100.0)),
+                        AutoFleaPrice.Maximum => prices.max * (1 - (SettingsModel.Instance.SubstractPricePercent.Value / 100.0)),
+                        _ => prices.avg * (1 - (99 / 100.0)),
+                    };
+
+                    if (prices.min <= 0.0f && prices.avg <= 0.0f && prices.max <= 0.0f)
+                    {
+                        callback(0.0);
+                        return;
+                    }
+                }
+
                 price = Math.Max(0, (int)Math.Round(price));
-                FastSellInFleaPlugin.LastCachePrice = price;
                 callback(price);
             });
         }
