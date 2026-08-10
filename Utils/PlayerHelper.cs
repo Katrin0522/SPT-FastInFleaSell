@@ -14,7 +14,7 @@ namespace FastSellInFlea.Utils;
 
 public static class PlayerHelper
 {
-    public static IEftSession Session => ClientAppUtils.GetMainApp().GetClientBackEndSession();
+    public static ISession Session => ClientAppUtils.GetMainApp().GetClientBackEndSession();
     
     public static bool HasRaidStarted()
     {			
@@ -40,7 +40,7 @@ public static class PlayerHelper
 
     public static bool CanBeSelectedAtRagfair(Item item)
     {
-        if (!CanQuickSell(item) || !(item.Owner is ItemController itemController))
+        if (!CanQuickSell(item) || !(item.Owner is TraderControllerClass itemController))
             return false;
 
         var ragFair = Session?.RagFair;
@@ -51,7 +51,7 @@ public static class PlayerHelper
         if (item.PinLockState != EItemPinLockState.Free)
             return false;
 
-        return RagFair.CanBeSelectedAtRagfair(item, itemController, out _);
+        return RagFairClass.CanBeSelectedAtRagfair(item, itemController, out _);
     }
 
     public static bool CanQuickSell(Item item)
@@ -80,6 +80,6 @@ public static class PlayerHelper
 
     private static bool IsPostRaidScavTransferOpen()
     {
-        return EftScreenManager.Instance?.CheckCurrentScreen(EEftScreenType.ScavInventory) == true;
+        return CurrentScreenSingletonClass.Instance?.CheckCurrentScreen(EEftScreenType.ScavInventory) == true;
     }
 }

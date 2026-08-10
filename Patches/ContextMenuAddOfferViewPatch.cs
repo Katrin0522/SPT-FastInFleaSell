@@ -22,7 +22,7 @@ namespace FastSellInFlea.Patches
         [PatchPostfix]
         public static void Postfix(string caption, TextMeshProUGUI ____text)
         {
-            RagFair ragFair = PlayerHelper.Session?.RagFair;
+            RagFairClass ragFair = PlayerHelper.Session.RagFair;
             var item = FastSellInFleaPlugin.LastCacheItem;
             if (ragFair != null && ragFair.Available && PlayerHelper.CanQuickSell(item) && ____text != null)
             {

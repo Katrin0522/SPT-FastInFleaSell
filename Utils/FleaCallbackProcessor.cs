@@ -16,6 +16,6 @@ namespace FastSellInFlea.Utils
         
         public Dictionary<Item, ItemAddress> OfferItemDict = new();
         
-        public ItemController ItemController;
+        public TraderControllerClass ItemController;
     }
 }

@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using Comfort.Common;
-using EFT.Settings;
 
 namespace FastSellInFlea.Models
 {
@@ -55,7 +54,7 @@ namespace FastSellInFlea.Models
 
         private string CurrentLanguage()
         {
-            var language = Singleton<SettingsManager>.Instance?.Game?.Settings?.Language?.Value;
+            var language = Singleton<SharedGameSettingsClass>.Instance?.Game?.Settings?.Language?.Value;
             return string.IsNullOrEmpty(language) ? "en" : language;
         }
         

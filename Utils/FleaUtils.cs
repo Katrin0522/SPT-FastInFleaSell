@@ -9,6 +9,7 @@ using FastSellInFlea.Models;
 using Newtonsoft.Json;
 using SPT.Common.Http;
 using UnityEngine;
+using BarterTemplate = GClass2335;
 
 namespace FastSellInFlea.Utils
 {
@@ -30,7 +31,7 @@ namespace FastSellInFlea.Utils
 
             var listItems = items.ToList();
             
-            if (listItems.Count == 0 || !(listItems[0].Owner is ItemController itemController) ||
+            if (listItems.Count == 0 || !(listItems[0].Owner is TraderControllerClass itemController) ||
                 listItems.Any(item => !ReferenceEquals(item.Owner, itemController)))
             {
                 return;
@@ -43,7 +44,7 @@ namespace FastSellInFlea.Utils
                     id = item.Id,
                     tpl = item.TemplateId,
                     count = listItems.Count(),
-                    fee = Mathf.CeilToInt((float)PriceCalculator.CalculateTaxPrice(item, item.StackObjectsCount, adjustedPrice, true))
+                    fee = Mathf.CeilToInt((float)FleaTaxCalculatorAbstractClass.CalculateTaxPrice(item, item.StackObjectsCount, adjustedPrice, true))
                 
                 }.ToJson());
             }
@@ -62,7 +63,7 @@ namespace FastSellInFlea.Utils
             }
             BarterTemplate[] gs = [dataOffer];
             PlayerHelper.Session.RagFair.AddOffer(false, allIds, gs, callbackProcessor.ProcessCallback);
-            NotificationManager.DisplayMessageNotification(LocalizationModel.Instance.GetLocaleText(TypeText.AddOffer, dataOffer.count), ENotificationDurationType.Default, ENotificationIconType.EntryPoint);
+            NotificationManagerClass.DisplayMessageNotification(LocalizationModel.Instance.GetLocaleText(TypeText.AddOffer, dataOffer.count), ENotificationDurationType.Default, ENotificationIconType.EntryPoint);
         }
     
         /// <summary>
@@ -83,7 +84,7 @@ namespace FastSellInFlea.Utils
         /// <param name="callback"></param>
         public static void TryAddOfferToFlea(Item item, double adjustedPrice, Action<bool> callback)
         {
-            if (item == null || !(item.Owner is ItemController itemController))
+            if (item == null || !(item.Owner is TraderControllerClass itemController))
             {
                 callback(false);
                 return;
@@ -101,7 +102,7 @@ namespace FastSellInFlea.Utils
                 id = item.Id,
                 tpl = item.TemplateId,
                 count = 1,
-                fee = Mathf.CeilToInt((float)PriceCalculator.CalculateTaxPrice(item, item.StackObjectsCount, adjustedPrice, true))
+                fee = Mathf.CeilToInt((float)FleaTaxCalculatorAbstractClass.CalculateTaxPrice(item, item.StackObjectsCount, adjustedPrice, true))
             
             }.ToJson());
             
@@ -114,7 +115,7 @@ namespace FastSellInFlea.Utils
             
             BarterTemplate[] gs = [dataOffer];
             PlayerHelper.Session.RagFair.AddOffer(false, new string[1] { item.Id }, gs, callbackProcessor.ProcessCallback);
-            NotificationManager.DisplayMessageNotification(LocalizationModel.Instance.GetLocaleText(TypeText.AddOffer, dataOffer.count), ENotificationDurationType.Default, ENotificationIconType.EntryPoint);
+            NotificationManagerClass.DisplayMessageNotification(LocalizationModel.Instance.GetLocaleText(TypeText.AddOffer, dataOffer.count), ENotificationDurationType.Default, ENotificationIconType.EntryPoint);
             callback(true);
         }
     

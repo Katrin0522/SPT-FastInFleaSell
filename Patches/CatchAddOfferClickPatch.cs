@@ -19,7 +19,7 @@ namespace FastSellInFlea.Patches
     {
         protected override MethodBase GetTargetMethod()
         {
-            return AccessTools.Method(typeof(BaseItemContextInteractions), nameof(BaseItemContextInteractions.AddOffer));
+            return AccessTools.Method(typeof(ContextInteractionsAbstractClass), "method_6");
         }
 
         [PatchPrefix]
@@ -35,7 +35,7 @@ namespace FastSellInFlea.Patches
                 if (FastSellInFleaPlugin.LastCacheItem == null)
                 {
                     FastSellInFleaPlugin.logSource.LogError($"LastCacheItem is NUll? -> {FastSellInFleaPlugin.LastCacheItem == null}\nLastCachePrice is NUll? -> {FastSellInFleaPlugin.LastCachePrice <= 0}\nMainContextMenu is NUll? -> {FastSellInFleaPlugin.MainContextMenu == null}");
-                    NotificationManager.DisplayWarningNotification(LocalizationModel.Instance.GetLocaleText(TypeText.ErrorAddOffer),
+                    NotificationManagerClass.DisplayWarningNotification(LocalizationModel.Instance.GetLocaleText(TypeText.ErrorAddOffer),
                         ENotificationDurationType.Long);
                     return true;
                 }
