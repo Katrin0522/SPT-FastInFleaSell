@@ -49,6 +49,9 @@
         <!-- Copy dll to build folder -->
         <Copy SourceFiles="@(OutputDLL)" DestinationFolder="$(ProjectDir)Build\BepInEx\plugins\%(RecursiveDir)" />
     </Target>
+    <Target Name="CreateReleaseArchive" AfterTargets="CopyDll">
+        <Exec Command="powershell.exe -NoProfile -ExecutionPolicy Bypass -File &quot;$(ProjectDir)CreatePackage.ps1&quot;" />
+    </Target>
     <ItemGroup>
         <Reference Include="0Harmony">
             <HintPath>$(TarkovBepInExCoreDir)0Harmony.dll</HintPath>
@@ -126,6 +129,7 @@
         <Compile Include="Utils\FleaUtils.cs" />
         <Compile Include="Utils\PlayerHelper.cs" />
         <Compile Include="Utils\MultiSelectInterop.cs" />
+        <None Include="CreatePackage.ps1" />
     </ItemGroup>
     <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets"/>
 </Project>
