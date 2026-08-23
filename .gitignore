@@ -4,3 +4,4 @@ obj/
 .vs
 Dependencies
 *.dll
+Build/*.7z
