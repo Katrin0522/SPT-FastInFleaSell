@@ -10,7 +10,7 @@ using TMPro;
 
 namespace FastSellInFlea
 {
-    [BepInPlugin("katrin0522.FastSellInFlea", "Kat.FastSellInFlea", "1.3.0")]
+    [BepInPlugin("katrin0522.FastSellInFlea", "Kat.FastSellInFlea", "1.3.1")]
     public class FastSellInFleaPlugin : BaseUnityPlugin
     {
         private SettingsModel _settings;
